@@ -5,7 +5,7 @@ from urllib import quote
 import re
 
 format_item = '* [{name}]({url})'.format
-bb_url = 'https://github.com/mesnardo/AeroPython/blob/master/{}'.format
+bb_url = 'github.com/mesnardo/AeroPython/blob/master/{}'.format
 
 def notebooks():
     return glob('lessons/*.ipynb')
