@@ -9,7 +9,8 @@
         margin-right:auto;
     }
     h1 {
-        font-family: Helvetica, serif;
+        font-family: 'Fenix', serif;
+		src: url('http://fonts.googleapis.com/css?family=Fenix' rel='stylesheet');
     }
     h2 {
         font-family: Helvetica, serif;
