@@ -1,11 +1,11 @@
 
-[title font] Aerodynamics-Hydrodynamics with Python
+## Aerodynamics-Hydrodynamics with Python
 
 "Aerodynamics-Hydrodynamics" (MAE 6226) is taught at the George Washington by Prof. Lorena Barba for the first time in Spring 2014. These IPython Notebooks are being prepared for this class, with assistance from Barba-group PhD student Olivier Mesnard.
 
 The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-[subtitle font] List of notebooks:
+### List of notebooks:
 
 * [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 * [sourceSink](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/01_Lesson01_sourceSink.ipynb)
