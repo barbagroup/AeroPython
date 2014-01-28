@@ -4,6 +4,18 @@ from glob import glob
 from urllib import quote
 import re
 
+header = '''
+[title font] Aerodynamics-Hydrodynamics with Python
+
+"Aerodynamics-Hydrodynamics" (MAE 6226) is taught at the George Washington by Prof. Lorena Barba for the first time in Spring 2014. These IPython Notebooks are being prepared for this class, with assistance from Barba-group PhD student Olivier Mesnard.
+
+The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+[subtitle font] List of notebooks:
+'''
+
+
+
 format_item = '* [{name}]({url})'.format
 bb_url = 'github.com/barbagroup/AeroPython/blob/master/{}'.format
 
@@ -21,7 +33,7 @@ def nb_url(filename):
     return 'http://nbviewer.ipython.org/urls/{}'.format(raw_url)
 
 def write_readme(nblist, fo):
-    fo.write('\n')
+    fo.write('{}\n'.format(header))
     for nb in nblist:
         name = lesson_name(nb)
         url = nb_url(nb)
