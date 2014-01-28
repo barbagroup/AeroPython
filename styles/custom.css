@@ -35,6 +35,7 @@
     }
     .CodeMirror{
             font-family: "Source Code Pro", source-code-pro,Consolas, monospace;
+			font-size: 90%;
     }
 /*    .prompt{
         display: None;
