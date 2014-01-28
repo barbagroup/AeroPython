@@ -17,6 +17,7 @@
         font-family: 'Fenix', serif;
     }
     h4{
+		font-family: 'Fenix', serif;
         margin-top:12px;
         margin-bottom: 3px;
        }
@@ -40,8 +41,9 @@
     .text_cell_render h1 {
         font-weight: 200;
         font-size: 50pt;
+		line-height: 100%;
         color:#CD2305;
-        margin-bottom: 1em;
+        margin-bottom: 0.5em;
         margin-top: 0.5em;
         display: block;
     }	
