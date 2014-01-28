@@ -1,5 +1,4 @@
-
-[title font] Aerodynamics-Hydrodynamics with Python
+# Aerodynamics-Hydrodynamics with Python
 
 "Aerodynamics-Hydrodynamics" (MAE 6226) is taught at the George Washington by Prof. Lorena Barba for the first time in Spring 2014. These IPython Notebooks are being prepared for this class, with assistance from Barba-group PhD student Olivier Mesnard.
 
