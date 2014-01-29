@@ -17,10 +17,13 @@
     h2 {
         font-family: 'Fenix', serif;
     }
-    h4{
+    h3{
 		font-family: 'Fenix', serif;
         margin-top:12px;
         margin-bottom: 3px;
+       }
+	h4{
+		font-family: 'Fenix', serif;
        }
     h5 {
         font-family: 'Alegreya Sans', sans-serif;
