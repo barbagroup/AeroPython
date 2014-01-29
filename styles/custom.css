@@ -34,7 +34,7 @@
         margin-right:auto;
     }
     .CodeMirror{
-            font-family: "Source Code Pro", source-code-pro,Consolas, monospace;
+            font-family: "Source Code Pro";
 			font-size: 90%;
     }
 /*    .prompt{
