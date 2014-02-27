@@ -16,5 +16,6 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 * [vortexLift](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_vortexLift.ipynb)
 * [methodOfImages](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/07_Lesson07_methodOfImages.ipynb)
 * [sourceSheet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/08_Lesson08_sourceSheet.ipynb)
-* [sourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/09_Lesson09_sourcePanelMethod.ipynb)
-* [vortexSourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/10_Lesson10_vortexSourcePanelMethod.ipynb)
+* [flowOverCylinder](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/09_Lesson09_flowOverCylinder.ipynb)
+* [sourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/10_Lesson10_sourcePanelMethod.ipynb)
+* [vortexSourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
