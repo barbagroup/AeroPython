@@ -14,6 +14,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 1. [sourceSink](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/01_Lesson01_sourceSink.ipynb)
 2. [sourceSinkFreestream](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/02_Lesson02_sourceSinkFreestream.ipynb)
 3. [doublet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_doublet.ipynb)
+4. [Assignment: Source distribution on an airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_Assignment.ipynb)
 
 ####Vortex lift
 
