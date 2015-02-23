@@ -18,7 +18,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 3. [doublet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_doublet.ipynb)
 4. [Assignment: Source distribution on an airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_Assignment.ipynb)
 
-####Module 2. Vortex lift
+####Module 2. Potential vortices and lift
 
 1. [vortex](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/04_Lesson04_vortex.ipynb)
 2. [InfiniteRowOfVortices](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/05_Lesson05_InfiniteRowOfVortices.ipynb)
