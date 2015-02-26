@@ -69,7 +69,8 @@
 <script>
     MathJax.Hub.Config({
                         TeX: {
-                           extensions: ["AMSmath.js"]
+                           extensions: ["AMSmath.js"], 
+                           equationNumbers: { autoNumber: "AMS", useLabelIds: true}
                            },
                 tex2jax: {
                     inlineMath: [ ['$','$'], ["\\(","\\)"] ],
