@@ -11,5 +11,5 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####Module 1. Boundary Layer
 
-1. [Blausius profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/lessons/Blasius.ipynb)
-2. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/lessons/Pohlhausen.ipynb)
+1. [Blausius profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/blob/master/lessons/Blasius.ipynb)
+2. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/blob/master/lessons/Pohlhausen.ipynb)
