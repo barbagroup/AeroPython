@@ -7,9 +7,9 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####0. Getting Started
 
-* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
+* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/MarineHydro/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 
 ####Module 1. Boundary Layer
 
-1. [Blausius profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/blob/master/lessons/Blasius.ipynb)
-2. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/AeroPython/blob/master/lessons/Pohlhausen.ipynb)
+1. [Blausius profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Blasius.ipynb)
+2. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Pohlhausen.ipynb)
