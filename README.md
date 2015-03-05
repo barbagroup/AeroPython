@@ -1,5 +1,5 @@
 
-## Computational Hydrodynamics with iPython Notebooks
+## Marine Hydrodynamics with iPython Notebooks
 
 The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
