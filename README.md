@@ -7,7 +7,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####0. Getting Started
 
-* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/MarineHydro/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
+* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 
 ####Module 1. Boundary Layer
 
