@@ -11,5 +11,6 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####Module 1. Boundary Layer
 
-1. [Blausius profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Blasius.ipynb)
-2. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Pohlhausen.ipynb)
+1. [Blausius solution](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Blasius.ipynb)
+1. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Pohlhausen.ipynb)
+1. [Turbulent boundary layers](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/TurbulentBoundaryLayer.ipynb)
