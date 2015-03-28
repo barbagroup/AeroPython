@@ -9,8 +9,13 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 * [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 
-####Module 1. Boundary Layer
+####Module 2. Boundary Layer
 
 1. [Blausius solution](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Blasius.ipynb)
 1. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Pohlhausen.ipynb)
 1. [Turbulent boundary layers](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/TurbulentBoundaryLayer.ipynb)
+
+####Module 3. Numerical methods
+
+1. [Vortex sheets](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/VortexSheet.ipynb)
+1. [Vortex Panel Method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/VortexPanelMethod.ipynb)
