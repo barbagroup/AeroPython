@@ -20,4 +20,4 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 1. [Vortex sheets](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/VortexSheet.ipynb)
 1. [Vortex panel method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/VortexPanelMethod.ipynb)
 1. [Lifting bodies](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/LiftingBodies.ipynb)
-1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/PohlhausenSolver.ipynb)
+1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/BoundaryLayerSolver.ipynb)
