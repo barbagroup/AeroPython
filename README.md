@@ -22,3 +22,4 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 1. [Lifting bodies](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/LiftingBodies.ipynb)
 1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/BoundaryLayerSolver.ipynb)
 1. [Separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/SeparationPrediction.ipynb)
+1. [**Assignment**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
