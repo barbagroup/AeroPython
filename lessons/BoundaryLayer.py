@@ -64,7 +64,7 @@ class Pohlhausen:
         self.s[0] = panels[0].S
         for i in range(len(self.s)-1):              # fill distance array
             self.s[i+1] = self.s[i]+panels[i].S+panels[i+1].S
-        ds = numpy.gradient(self.s))
+        ds = numpy.gradient(self.s)
         self.du_e = numpy.gradient(self.u_e,ds)     # compute velocity gradient
         
         self.nu = nu                                # kinematic viscosity
@@ -101,7 +101,7 @@ def solve_plot_boundary_layers(panels,alpha=0,nu=1e-5):
     bottom = Pohlhausen(bottom_panels,nu)
     bottom.march()
     
-    # plot flow with stagnation points
+    # plot flow with separation points
     plot_flow(panels,alpha)
     pyplot.scatter(top.x_sep, top.y_sep, s=100, c='r')
     pyplot.scatter(bottom.x_sep, bottom.y_sep, s=100, c='g')
