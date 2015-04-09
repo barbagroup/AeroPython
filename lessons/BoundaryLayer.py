@@ -44,50 +44,66 @@ def march(x,u_e,du_e,nu):
         if abs(lam[i+1])>12: break                          # check stop condition
     return delta,lam,i                                  # return with separation index
 
+
+# Split panels into two boundary layer sections
+def split_panels(panels):
+    # positive velocity defines `top` BL
+    top = [p for p in panels if p.gamma<=0]
+    # negative defines the `bottom`
+    bottom = [p for p in panels if p.gamma>=0]
+    # reverse array so panel[0] is stagnation
+    bottom = bottom[::-1]
+    
+    return top,bottom
+
 # Pohlhausen Boundary Layer class
 class Pohlhausen:
     def __init__(self,panels,nu):
-        self.u_e = [abs(p.gamma) for p in panels]                       # tangential velocity
-        self.s = numpy.empty_like(self.u_e)                             # initialize distance array
+        self.u_e = [abs(p.gamma) for p in panels]   # tangential velocity
+        self.s = numpy.empty_like(self.u_e)         # initialize distance array
         self.s[0] = panels[0].S
-        for i in range(len(self.s)-1):
-            self.s[i+1] = self.s[i]+panels[i].S+panels[i+1].S           # fill distance array
-        self.du_e = numpy.gradient(self.u_e, numpy.gradient(self.s))    # get velocity gradients
+        for i in range(len(self.s)-1):              # fill distance array
+            self.s[i+1] = self.s[i]+panels[i].S+panels[i+1].S
+        ds = numpy.gradient(self.s))
+        self.du_e = numpy.gradient(self.u_e,ds)     # compute velocity gradient
         
-        self.nu = nu                                                    # kinematic viscosity
-        self.xc = [p.xc for p in panels]                                # x and ...
-        self.yc = [p.yc for p in panels]                                # y locations
+        self.nu = nu                                # kinematic viscosity
+        self.xc = [p.xc for p in panels]            # x and ...
+        self.yc = [p.yc for p in panels]            # y locations
     
     def march(self):
+        # march down the boundary layer until separation
         from BoundaryLayer import march
-        def sep_interp(y):
-            return numpy.interp(12,-self.lam[self.iSep:self.iSep+2],y[self.iSep:self.iSep+2])
-        
         self.delta,self.lam,self.iSep = march(self.s,self.u_e,self.du_e,self.nu)
-        self.sSep = sep_interp(self.s)
-        self.xSep = sep_interp(self.xc)
-        self.ySep = sep_interp(self.yc)
-        self.deltaSep = sep_interp(self.delta)
+        
+        # interpolate values at the separation point
+        def sep_interp(y): return numpy.interp(    # interpolate function
+            12,-self.lam[self.iSep:self.iSep+2],y[self.iSep:self.iSep+2])
+        self.s_sep = sep_interp(self.s)
+        self.u_e_sep = sep_interp(self.u_e)
+        self.x_sep = sep_interp(self.xc)
+        self.y_sep = sep_interp(self.yc)
+        self.delta_sep = sep_interp(self.delta)
 
 # solve and plot the boundary layer flow.
 def solve_plot_boundary_layers(panels,alpha=0,nu=1e-5):
     from VortexPanel import plot_flow
     from matplotlib import pyplot
     
+    # split the panels
+    top_panels,bottom_panels = split_panels(panels)
+    
     # Set up and solve the top boundary layer
-    top_panels = [p for p in panels if p.gamma<=0]      # negative gamma on the top
     top = Pohlhausen(top_panels,nu)
     top.march()
     
     # Set up and solve the bottom boundary layer
-    bottom_panels = [p for p in panels if p.gamma>=0]     # positive gamma on the bottom
-    bottom_panels = bottom_panels[::-1]                 # reverse array so 0 is stagnation
     bottom = Pohlhausen(bottom_panels,nu)
     bottom.march()
     
     # plot flow with stagnation points
     plot_flow(panels,alpha)
-    pyplot.scatter(top.xSep, top.ySep, s=100, c='r')
-    pyplot.scatter(bottom.xSep, bottom.ySep, s=100, c='g')
+    pyplot.scatter(top.x_sep, top.y_sep, s=100, c='r')
+    pyplot.scatter(bottom.x_sep, bottom.y_sep, s=100, c='g')
     
     return top,bottom
