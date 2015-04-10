@@ -107,8 +107,8 @@ def solve_gamma(panels,alpha=0):
 # determine the vortex panel strength with Kutta Condition
 def solve_gamma_kutta(panels,alpha=0):
     A,b = construct_A_b(panels,alpha)   # construct linear system
-    A[:,0] += 1                         # gamma[0]+ ...
-    A[:,len(panels)-1] += 1             # gamma[N-1]=0
+    A[:, 0] += 1                        # gamma[0]+ ...
+    A[:,-1] += 1                        # gamma[N-1]=0
     gamma = numpy.linalg.solve(A, b)    # solve for gamma!
     for i,p_i in enumerate(panels):
         p_i.gamma = gamma[i]            # update panels
