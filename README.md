@@ -23,6 +23,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 1. [vortex](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/04_Lesson04_vortex.ipynb)
 2. [InfiniteRowOfVortices](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/05_Lesson05_InfiniteRowOfVortices.ipynb)
 3. [vortexLift](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_vortexLift.ipynb)
+4. [Assignment: Joukowski transformation](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_Assignment.ipynb)
 
 ####Module 3. Source-panel method for non-lifting bodies
 
@@ -33,4 +34,5 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####Module 4. Vortex-panel method for lifting bodies
 
-* [vortexSourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
+1. [vortexSourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
+2. [Assignment: 2D multi-component airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Assignment.ipynb)
