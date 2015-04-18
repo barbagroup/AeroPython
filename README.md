@@ -9,7 +9,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####0. Getting Started
 
-* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
+* [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 
 ####Module 1. Building blocks of potential flow
 
@@ -32,7 +32,7 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 3. [Flow over a cylinder with source panels](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/09_Lesson09_flowOverCylinder.ipynb)
 4. [Source panel method](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/10_Lesson10_sourcePanelMethod.ipynb)
 
-####Module 4. Vortex-panel method for lifting bodies
+####Module 4. Vortex-source panel method for lifting bodies
 
 1. [Vortex-source panel method](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
 2. [Exercise: Derivation of the vortex-source panel method](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Exercise.ipynb)
