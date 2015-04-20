@@ -1,6 +1,6 @@
 #Student Projects
 
-Student projects are collected via pull request to a separate repository.
+Student projects are being collected via pull request to a [separate repository](https://github.com/barbagroup/AeroPython-studentprojects).
 Instructor feedback is provided via comments on the pull request, and the best projects are merged.
 We provide links here to some sample projets from each year.
 
