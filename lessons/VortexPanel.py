@@ -125,7 +125,7 @@ def make_circle(N,t_c=1):
     
     # define the panels
     circle = numpy.empty(N, dtype=object)
-    for i in xrange(N):
+    for i in range(N):
         circle[i] = Panel(x_ends[i], y_ends[i], x_ends[i+1], y_ends[i+1])
     
     return circle
@@ -148,7 +148,7 @@ def make_jukowski( N, dx = 0.2, dy = 0, dr = 0 ):
     
     # define the panels
     foil = numpy.empty(N, dtype=object)
-    for i in xrange(N):
+    for i in range(N):
         foil[i] = Panel(x3_ends[i], y3_ends[i], x3_ends[i+1], y3_ends[i+1])
     
     return foil
