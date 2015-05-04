@@ -9,30 +9,31 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 
 ####0. Getting Started
 
-* [QuickPythonIntro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
+* [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/00_Lesson00_QuickPythonIntro.ipynb)
 
 ####Module 1. Building blocks of potential flow
 
-1. [sourceSink](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/01_Lesson01_sourceSink.ipynb)
-2. [sourceSinkFreestream](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/02_Lesson02_sourceSinkFreestream.ipynb)
-3. [doublet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_doublet.ipynb)
+1. [Source & Sink](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/01_Lesson01_sourceSink.ipynb)
+2. [Source & Sink in a Freestream](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/02_Lesson02_sourceSinkFreestream.ipynb)
+3. [Doublet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_doublet.ipynb)
 4. [Assignment: Source distribution on an airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/03_Lesson03_Assignment.ipynb)
 
 ####Module 2. Potential vortices and lift
 
-1. [vortex](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/04_Lesson04_vortex.ipynb)
-2. [InfiniteRowOfVortices](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/05_Lesson05_InfiniteRowOfVortices.ipynb)
-3. [vortexLift](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_vortexLift.ipynb)
+1. [Vortex](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/04_Lesson04_vortex.ipynb)
+2. [Infinite row of vortices](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/05_Lesson05_InfiniteRowOfVortices.ipynb)
+3. [Vortex Lift on a cylinder](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_vortexLift.ipynb)
 4. [Assignment: Joukowski transformation](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/06_Lesson06_Assignment.ipynb)
 
 ####Module 3. Source-panel method for non-lifting bodies
 
-1. [methodOfImages](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/07_Lesson07_methodOfImages.ipynb)
-2. [sourceSheet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/08_Lesson08_sourceSheet.ipynb)
-3. [flowOverCylinder](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/09_Lesson09_flowOverCylinder.ipynb)
-4. [sourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/10_Lesson10_sourcePanelMethod.ipynb)
+1. [Method of Images](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/07_Lesson07_methodOfImages.ipynb)
+2. [Source Sheet](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/08_Lesson08_sourceSheet.ipynb)
+3. [Flow over a cylinder with source panels](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/09_Lesson09_flowOverCylinder.ipynb)
+4. [Source panel method](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/10_Lesson10_sourcePanelMethod.ipynb)
 
-####Module 4. Vortex-panel method for lifting bodies
+####Module 4. Vortex-source panel method for lifting bodies
 
-1. [vortexSourcePanelMethod](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
-2. [Assignment: 2D multi-component airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Assignment.ipynb)
+1. [Vortex-source panel method](http://nbviewer.ipython.org/urls/github.com/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_vortexSourcePanelMethod.ipynb)
+2. [Exercise: Derivation of the vortex-source panel method](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Exercise.ipynb)
+3. [Assignment: 2D multi-component airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Assignment.ipynb)
