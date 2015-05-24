@@ -1,7 +1,26 @@
-import numpy
+""" Solve boundary layer problems using Pohlhausen's method
 
-# thickness ratios
+This module holds routines to determine the evolution of a boundary layer
+in a varying external flow assuming a Pohlhausen velocity profile. 
+
+Example:
+    Determine the boundary layer thickness delta, shape parameter
+    lam(bda), and index of separation iSep given a sinusoid external
+    flow:
+
+        x = numpy.linspace(0,1,16)
+        delta,lam,iSep = march(x,u_e=numpy.sin(x),nu=1e-5)
+
+Imports: numpy, bisect from scipy.optimize
+"""
+
+import numpy
+from scipy.optimize import bisect
+
+# displacement thickness ratios
 def disp_ratio(lam): return 3./10.-lam/120.
+
+# momentum thickness ratios
 def mom_ratio(lam): return 37./315.-lam/945.-lam**2/9072.
 
 # wall derivative
@@ -11,99 +30,88 @@ def df_0(lam): return 2+lam/6.
 def g_1(lam): return df_0(lam)-lam*(disp_ratio(lam)+2*mom_ratio(lam))
 
 # use bisect method to find lambda0
-from scipy.optimize import bisect
 lam0 = bisect(g_1,-12,12)
 
 # boundary layer thickness derivative
 def ddx_delta(Re_d,lam):
-    if Re_d==0: return 0                     # Stagnation point condition
-    return g_1(lam)/mom_ratio(lam)/Re_d      # delta'
+    if Re_d==0: return 0                # stagnation point condition
+    return g_1(lam)/mom_ratio(lam)/Re_d
 
 # Heun's method for ODE integration
 def heun(g,psi_i,i,dx,*args):
-    g_i = g(psi_i,i,*args)                      # integrand at i
-    tilde_psi = psi_i+g_i*dx                    # predicted estimate at i+1
-    g_i_1 = g(tilde_psi,i+1,*args)              # integrand at i+1
-    return psi_i+0.5*(g_i+g_i_1)*dx             # corrected estimate
+    g_i = g(psi_i,i,*args)              # integrand at i
+    tilde_psi = psi_i+g_i*dx            # predicted estimate at i+1
+    g_i_1 = g(tilde_psi,i+1,*args)      # integrand at i+1
+    return psi_i+0.5*(g_i+g_i_1)*dx     # corrected estimate
 
 # boundary layer ODE integrand function
 def g_pohl(delta_i,i,u_e,du_e,nu):
-    Re_d = delta_i*u_e[i]/nu            # compute local Reynolds number
-    lam = delta_i**2*du_e[i]/nu         # compute local lambda
-    return ddx_delta(Re_d,lam)          # get derivative
+    Re_d = delta_i*u_e[i]/nu            # definition of Re_delta
+    lam = delta_i**2*du_e[i]/nu         # definition of lambda
+    lam = min(12,max(-12,lam))          # enforce bounds on lambda
+    return ddx_delta(Re_d,lam)          # compute derivative
 
-# march along boundary layer from stagnation point to separation point
-def march(x,u_e,du_e,nu):
-    delta0 = numpy.sqrt(lam0*nu/du_e[0])                # set delta0
-    delta = numpy.full_like(x,delta0)                   # delta array
-    lam = numpy.full_like(x,lam0)                       # lambda array
-    for i in range(len(x)-1):                           # march!
-        delta[i+1] = heun(g_pohl,delta[i],i,x[i+1]-x[i],    # integrate BL using...
-                          u_e,du_e,nu)                          # additional arguments
-        lam[i+1] = delta[i+1]**2*du_e[i+1]/nu               # compute lambda
-        if abs(lam[i+1])>12: break                          # check stop condition
-    return delta,lam,i                                  # return with separation index
+# march along boundary layer from stagnation to separation:
+# return the boundary layer thickness, shape function,
+# and separation index
+def march(x,u_e,nu):
+    dx = numpy.diff(x)
+    du_e = numpy.gradient(u_e,numpy.gradient(x))
+    delta = numpy.full_like(x,0.)
+    lam = numpy.full_like(x,lam0)
+    
+    # Initial conditions must be a stagnation point. If u_e[0] is too
+    # fast, assume stagnation is at x=0 and integrate from x=0..x[0].
+    if u_e[0]<0.01:                     # stagnation point
+        delta[0] = numpy.sqrt(lam0*nu/du_e[0])
+    elif x[0]>0:                        # just downstream
+        delta[0] = numpy.sqrt(lam0*nu*x[0]/u_e[0])
+        delta[0] += 0.5*x[0]*g_pohl(delta[0],0,u_e,du_e,nu)
+        lam[0] = delta[0]**2*du_e[0]/nu
+    else:
+        raise ValueError('x=0 must be stagnation point')
+    
+    # march!
+    for i in range(len(x)-1):
+        delta[i+1] = heun(g_pohl,delta[i],i,dx[i],
+                          u_e,du_e,nu)  # ...additional arguments
+        lam[i+1] = delta[i+1]**2*du_e[i+1]/nu
+        
+        if lam[i+1] < -12: i-=1; break  # separation condition
+    
+    return delta,lam,i+1                # return with separation index
+
+# interpolate value of `y` at the separation point
+def sep(y,lam,iSep):
+    return numpy.interp( 12,-lam[iSep:iSep+2],y[iSep:iSep+2])
 
 
-# Split panels into two boundary layer sections
-def split_panels(panels):
-    # positive velocity defines `top` BL
+### Boundary layers on vortex panels
+
+# split panels into two boundary layer sections
+def split(panels):
     top = [p for p in panels if p.gamma<=0]
-    # negative defines the `bottom`
     bottom = [p for p in panels if p.gamma>=0]
-    # reverse array so panel[0] is stagnation
-    bottom = bottom[::-1]
-    
+    bottom = bottom[::-1]               # reverse array
     return top,bottom
 
-# Pohlhausen Boundary Layer class
-class Pohlhausen:
-    def __init__(self,panels,nu):
-        self.u_e = [abs(p.gamma) for p in panels]   # tangential velocity
-        self.s = numpy.empty_like(self.u_e)         # initialize distance array
-        self.s[0] = panels[0].S
-        for i in range(len(self.s)-1):              # fill distance array
-            self.s[i+1] = self.s[i]+panels[i].S+panels[i+1].S
-        ds = numpy.gradient(self.s)
-        self.du_e = numpy.gradient(self.u_e,ds)     # compute velocity gradient
-        
-        self.nu = nu                                # kinematic viscosity
-        self.xc = [p.xc for p in panels]            # x and ...
-        self.yc = [p.yc for p in panels]            # y locations
-    
-    def march(self):
-        # march down the boundary layer until separation
-        from BoundaryLayer import march
-        self.delta,self.lam,self.iSep = march(self.s,self.u_e,self.du_e,self.nu)
-        
-        # interpolate values at the separation point
-        def sep_interp(y): return numpy.interp(    # interpolate function
-            12,-self.lam[self.iSep:self.iSep+2],y[self.iSep:self.iSep+2])
-        self.s_sep = sep_interp(self.s)
-        self.u_e_sep = sep_interp(self.u_e)
-        self.x_sep = sep_interp(self.xc)
-        self.y_sep = sep_interp(self.yc)
-        self.delta_sep = sep_interp(self.delta)
+# get distance array
+def distance(panels):
+    s = numpy.empty(len(panels))
+    s[0] = panels[0].S
+    for i in range(len(s)-1):
+        s[i+1] = s[i]+panels[i].S+panels[i+1].S
+    return s
 
-# solve and plot the boundary layer flow.
-def solve_plot_boundary_layers(panels,alpha=0,nu=1e-5):
-    from VortexPanel import plot_flow
-    from matplotlib import pyplot
-    
-    # split the panels
-    top_panels,bottom_panels = split_panels(panels)
-    
-    # Set up and solve the top boundary layer
-    top = Pohlhausen(top_panels,nu)
-    top.march()
-    
-    # Set up and solve the bottom boundary layer
-    bottom = Pohlhausen(bottom_panels,nu)
-    bottom.march()
-    
-    # plot flow with separation points
-    plot_flow(panels,alpha)
-    pyplot.scatter(top.x_sep, top.y_sep, s=100, c='r')
-    pyplot.scatter(bottom.x_sep, bottom.y_sep, s=100, c='g')
-    
-    return top,bottom
+# march along panels
+def panel_march(panels,nu=1e-5):
+    s = distance(panels)                    # distance
+    u_e = [abs(p.gamma) for p in panels]    # velocity
+    return march(s,u_e,nu)                  # march
+
+# predict x,y separation point 
+def predict_separation_point(panels):
+    delta,lam,iSep = panel_march(panels,nu=1e-5)
+    xSep = sep([p.xc for p in panels],lam,iSep)
+    ySep = sep([p.yc for p in panels],lam,iSep)
+    return xSep,ySep
