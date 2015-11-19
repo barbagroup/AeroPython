@@ -1,7 +1,7 @@
 """ Solve boundary layer problems using Pohlhausen's method
 
 This module holds routines to determine the evolution of a boundary layer
-in a varying external flow assuming a Pohlhausen velocity profile. 
+in a varying external flow assuming a Pohlhausen velocity profile.
 
 Example:
     Determine the boundary layer thickness delta, shape parameter
@@ -59,7 +59,7 @@ def march(x,u_e,nu):
     du_e = numpy.gradient(u_e,numpy.gradient(x))
     delta = numpy.full_like(x,0.)
     lam = numpy.full_like(x,lam0)
-    
+
     # Initial conditions must be a stagnation point. If u_e[0] is too
     # fast, assume stagnation is at x=0 and integrate from x=0..x[0].
     if u_e[0]<0.01:                     # stagnation point
@@ -70,15 +70,15 @@ def march(x,u_e,nu):
         lam[0] = delta[0]**2*du_e[0]/nu
     else:
         raise ValueError('x=0 must be stagnation point')
-    
+
     # march!
     for i in range(len(x)-1):
         delta[i+1] = heun(g_pohl,delta[i],i,dx[i],
                           u_e,du_e,nu)  # ...additional arguments
         lam[i+1] = delta[i+1]**2*du_e[i+1]/nu
-        
+
         if lam[i+1] < -12: i-=1; break  # separation condition
-    
+
     return delta,lam,i+1                # return with separation index
 
 # interpolate value of `y` at the separation point
@@ -109,9 +109,35 @@ def panel_march(panels,nu=1e-5):
     u_e = [abs(p.gamma) for p in panels]    # velocity
     return march(s,u_e,nu)                  # march
 
-# predict x,y separation point 
+# predict x,y separation point
 def predict_separation_point(panels):
     delta,lam,iSep = panel_march(panels,nu=1e-5)
     xSep = sep([p.xc for p in panels],lam,iSep)
     ySep = sep([p.yc for p in panels],lam,iSep)
     return xSep,ySep
+
+# solve for the external and BL flow and plot it
+def solve_plot_separation(panels,alpha=0):
+    from matplotlib import pyplot
+    from VortexPanel import solve_gamma_kutta, plot_flow
+
+    # find and print t/c
+    x0 = min([p.xc for p in panels])
+    c = max([p.xc for p in panels])-x0
+    t = max([p.yc for p in panels])-min([p.yc for p in panels])
+    print("t/c = "+"%.3f"%(t/c))
+
+    # solve, plot, & split panels
+    solve_gamma_kutta(panels,alpha)
+    plot_flow(panels,alpha)
+    top,bottom = split(panels)
+
+    # find, plot, & print top separation point
+    xSep,ySep = predict_separation_point(top)
+    pyplot.scatter(xSep, ySep, s=100, c='r')
+    print("Top separation at x/c = "+"%.3f"%((xSep-x0)/c))
+
+    # find, plot, & print bottom separation point
+    xSep,ySep = predict_separation_point(bottom)
+    pyplot.scatter(xSep, ySep, s=100, c='g')
+    print("Bottom separation at x/c = "+"%.3f"%((xSep-x0)/c))
