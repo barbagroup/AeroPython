@@ -15,9 +15,8 @@ Teaching numerical hydrodynamics with IPython notebooks was inspired by [AeroPyt
 
 ####Module 2. Boundary Layer
 
-1. [Blausius solution](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_1_Blasius.ipynb)
-1. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_2_Pohlhausen.ipynb)
 1. [Turbulent boundary layers](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_3_TurbulentBoundaryLayer.ipynb)
+1. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_4_Pohlhausen.ipynb)
 
 ####Module 3. Numerical methods
 
