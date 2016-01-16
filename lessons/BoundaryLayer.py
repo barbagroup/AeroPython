@@ -60,8 +60,8 @@ def march(x,u_e,nu):
     delta = numpy.full_like(x,0.)
     lam = numpy.full_like(x,lam0)
 
-    # Initial conditions must be a stagnation point. If u_e[0] is too
-    # fast, assume stagnation is at x=0 and integrate from x=0..x[0].
+    # Initial conditions must be a stagnation point. If u_e[0]>0
+    # assume stagnation is at x=0 and integrate from x=0..x[0].
     if u_e[0]<0.01:                     # stagnation point
         delta[0] = numpy.sqrt(lam0*nu/du_e[0])
     elif x[0]>0:                        # just downstream
@@ -115,29 +115,3 @@ def predict_separation_point(panels):
     xSep = sep([p.xc for p in panels],lam,iSep)
     ySep = sep([p.yc for p in panels],lam,iSep)
     return xSep,ySep
-
-# solve for the external and BL flow and plot it
-def solve_plot_separation(panels,alpha=0):
-    from matplotlib import pyplot
-    from VortexPanel import solve_gamma_kutta, plot_flow
-
-    # find and print t/c
-    x0 = min([p.xc for p in panels])
-    c = max([p.xc for p in panels])-x0
-    t = max([p.yc for p in panels])-min([p.yc for p in panels])
-    print("t/c = "+"%.3f"%(t/c))
-
-    # solve, plot, & split panels
-    solve_gamma_kutta(panels,alpha)
-    plot_flow(panels,alpha)
-    top,bottom = split(panels)
-
-    # find, plot, & print top separation point
-    xSep,ySep = predict_separation_point(top)
-    pyplot.scatter(xSep, ySep, s=100, c='r')
-    print("Top separation at x/c = "+"%.3f"%((xSep-x0)/c))
-
-    # find, plot, & print bottom separation point
-    xSep,ySep = predict_separation_point(bottom)
-    pyplot.scatter(xSep, ySep, s=100, c='g')
-    print("Bottom separation at x/c = "+"%.3f"%((xSep-x0)/c))
