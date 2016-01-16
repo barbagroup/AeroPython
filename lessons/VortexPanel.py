@@ -156,17 +156,17 @@ def solve_gamma_kutta(panels,alpha=0):
 
 ### Geometries
 
-# polynomial shape function
-def polynomial(theta,N_sides):
+# polygonal shape function
+def polygon(theta,N_sides):
     a = theta % (2.*numpy.pi/N_sides)-numpy.pi/N_sides
     r = numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
     return [r*numpy.cos(theta),r*numpy.sin(theta)]
 
-# make a polynomial array of Panels
+# make a polygonal array of Panels
 def make_poly(N_panels,N_sides):
     # define the end-points
     theta = numpy.linspace(0, -2*numpy.pi, N_panels+1)   # equal radial spacing
-    x_ends,y_ends = polynomial( theta, N_sides)          # get the coordinates
+    x_ends,y_ends = polygon( theta, N_sides)          # get the coordinates
 
     # define the panels
     panels = numpy.empty(N_panels, dtype=object)         # empty array of panels
@@ -188,7 +188,6 @@ def make_circle(N, t_c=1, xcen=0, ycen=0):
         circle[i] = Panel(x_ends[i], y_ends[i], x_ends[i+1], y_ends[i+1])
 
     return circle
-
 
 # make a jukowski foil
 def make_jukowski(N, dx=0.18, dtheta=0, dr = 0):
