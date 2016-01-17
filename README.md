@@ -1,7 +1,7 @@
 
 ## Marine Hydrodynamics with Jupyter Notebooks
 
-These IPython notebooks contain content for the *Marine Hydrodynamics* course at The University of Southampton, taught by Phil Wilson and [Gabriel Weymouth](http://www.southampton.ac.uk/engineering/about/staff/gdw1d12.page). The course covers analytical potential flow, boundary layer theory, and numerical methods. The notebooks are used primaraly for the numerical module. 
+These IPython notebooks contain content for the *Marine Hydrodynamics* course at The University of Southampton, taught by Phil Wilson and [Gabriel Weymouth](http://www.southampton.ac.uk/engineering/about/staff/gdw1d12.page). The course covers analytical potential flow, boundary layer theory, and numerical methods. The notebooks are used primarily for the numerical module. 
 
 Teaching numerical hydrodynamics with [jupyter notebooks](http://jupyter.org/) was inspired by [AeroPython](https://github.com/barbagroup/AeroPython) developed by [Lorena Barba](http://lorenabarba.com/). The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
