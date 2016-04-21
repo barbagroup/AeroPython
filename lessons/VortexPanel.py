@@ -89,7 +89,7 @@ def flow_velocity(panels,x,y,alpha=0):
 
 
 # plot the flow on a grid
-def plot_flow(panels,alpha=0,xmax=2,N_grid=100):
+def plot_flow(panels,alpha=0,xmax=2,N_grid=100,mx=None):
     # define the grid
     X = numpy.linspace(-xmax, xmax, N_grid) # computes a 1D-array for x
     Y = numpy.linspace(-xmax, xmax, N_grid) # computes a 1D-array for y
@@ -103,13 +103,13 @@ def plot_flow(panels,alpha=0,xmax=2,N_grid=100):
     pyplot.xlabel('x', fontsize=16)     # label x
     pyplot.ylabel('y', fontsize=16)     # label y
     m = numpy.sqrt(u**2+v**2)           # compute velocity magnitude
-    velocity = pyplot.contourf(x, y, m) # plot magnitude contours
+    velocity = pyplot.contourf(x, y, m, vmin=0, vmax=mx) # plot magnitude contours
     cbar = pyplot.colorbar(velocity, orientation='horizontal')
     cbar.set_label('Velocity magnitude', fontsize=16);
     pyplot.quiver(x[::4,::4], y[::4,::4],
                   u[::4,::4], v[::4,::4]) # plot vector field
     for p in panels: p.plot()
-
+    pyplot.show()
 
 ### Flow solvers
 
