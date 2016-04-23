@@ -75,7 +75,7 @@ class Panel(object):
 
 # generate numpy array of panel.key
 def get_array(panels,key):
-    return numpy.asarray([getattr(p,key) for p in panels])
+    return numpy.array([getattr(p,key) for p in panels])
 
 
 ### Visualize
