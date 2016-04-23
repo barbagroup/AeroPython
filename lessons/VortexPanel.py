@@ -28,7 +28,14 @@ def get_v( x, y, S, gamma ):
 
 # Constant strength vortex panel
 class Panel(object):
+    """Constant strength vortex panel class.
 
+    variables:
+    xc,yc -- the x and y location of the panel center
+    S     -- the half-width of the panel
+    sx,sy -- the x and y component of the tangent unit vector
+    gamma -- the panel vortex strength. Defaults to zero.
+    """
     # Initialize a panel between two point with strength gamma
     def __init__(self, x0, y0, x1, y1, gamma=0):
         self.x,self.y,self.gamma = [x0,x1],[y0,y1],gamma
@@ -65,6 +72,10 @@ class Panel(object):
         u = up*self.sx-vp*self.sy    # reverse rotate u prime
         v = vp*self.sx+up*self.sy    # reverse rotate v prime
         return u, v
+
+# generate numpy array of panel.key
+def get_array(panels,key):
+    return numpy.asarray([getattr(p,key) for p in panels])
 
 
 ### Visualize
@@ -109,7 +120,6 @@ def plot_flow(panels,alpha=0,xmax=2,N_grid=100,mx=None):
     pyplot.quiver(x[::4,::4], y[::4,::4],
                   u[::4,::4], v[::4,::4]) # plot vector field
     for p in panels: p.plot()
-    pyplot.show()
 
 ### Flow solvers
 
