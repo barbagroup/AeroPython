@@ -143,9 +143,12 @@ def flow_velocity(panels,x,y,alpha=0):
 
     return u, v
 
+def magnitude(u,v): return numpy.sqrt(u**2+v**2)
 
 # plot the flow on a grid
-def plot_flow(panels,alpha=0,size=2,N_grid=100,contour_max=None):
+def plot_flow(panels,alpha=0,size=2,N_grid=100,
+              contour_min=0,contour_max=None,
+              contour_fun=magnitude,contour_lab='Velocity magnitude'):
     """ Plot the flow induced by a Panel array and the background flow
     
     Notes: 
@@ -158,7 +161,10 @@ def plot_flow(panels,alpha=0,size=2,N_grid=100,contour_max=None):
     alpha   -- angle of attack relative to x-axis; must be a scalar; default 0 
     size    -- size of the domain; corners are at (-size,-size) and (size,size); default 2
     N_grid  -- number of points in the domain grid in each direction; default 100
+    contour_min -- the minimum contour value for the velocity magnitude; defaults to 0
     contour_max -- the maximum contour value for the velocity magnitude; defaults to max in domain
+    contour_fun -- function of u,v to contour; defaults to |u|
+    contour_lab -- contour label; defaults to 'Velocity magnitude'
     
     Outputs:
     pyplot object of the flow vectors, contours of the velocity magnitude, and the panels.
@@ -180,11 +186,13 @@ def plot_flow(panels,alpha=0,size=2,N_grid=100,contour_max=None):
     pyplot.figure(figsize=(6,5))        # set size
     pyplot.xlabel('x', fontsize=14)     # label x
     pyplot.ylabel('y', fontsize=14)     # label y
-    m = numpy.sqrt(u**2+v**2)           # compute velocity magnitude
-    # plot magnitude contours
-    velocity = pyplot.contourf(x, y, m, vmin=0, vmax=contour_max) 
+
+    # plot contours
+    m = contour_fun(u,v)
+    velocity = pyplot.contourf(x, y, m, vmin=contour_min, vmax=contour_max) 
     cbar = pyplot.colorbar(velocity)
-    cbar.set_label('Velocity magnitude', fontsize=14);
+    cbar.set_label(contour_lab, fontsize=14);
+
     # plot vector field
     pyplot.quiver(x[::4,::4], y[::4,::4],
                   u[::4,::4], v[::4,::4]) 
