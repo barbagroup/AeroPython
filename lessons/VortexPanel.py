@@ -177,14 +177,14 @@ def plot_flow(panels,alpha=0,size=2,N_grid=100,contour_max=None):
     u,v = flow_velocity(panels,x,y,alpha)
 
     # plot it
-    pyplot.figure(figsize=(8,11))       # set size
-    pyplot.xlabel('x', fontsize=16)     # label x
-    pyplot.ylabel('y', fontsize=16)     # label y
+    pyplot.figure(figsize=(6,5))        # set size
+    pyplot.xlabel('x', fontsize=14)     # label x
+    pyplot.ylabel('y', fontsize=14)     # label y
     m = numpy.sqrt(u**2+v**2)           # compute velocity magnitude
     # plot magnitude contours
     velocity = pyplot.contourf(x, y, m, vmin=0, vmax=contour_max) 
-    cbar = pyplot.colorbar(velocity, orientation='horizontal')
-    cbar.set_label('Velocity magnitude', fontsize=16);
+    cbar = pyplot.colorbar(velocity)
+    cbar.set_label('Velocity magnitude', fontsize=14);
     # plot vector field
     pyplot.quiver(x[::4,::4], y[::4,::4],
                   u[::4,::4], v[::4,::4]) 
