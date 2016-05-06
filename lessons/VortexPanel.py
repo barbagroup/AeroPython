@@ -13,6 +13,7 @@ Methods:
     get_array
     make_polygon
     make_ellipse
+    make_circle
     make_jukowski
 
 Imports: numpy, pyplot from matplotlib
@@ -24,11 +25,11 @@ from matplotlib import pyplot
 ### Fundamentals
 
 # x-component of induced velocity
-def get_u( x, y, S, gamma ):
+def _get_u( x, y, S, gamma ):
     return gamma/(2*numpy.pi)*(numpy.arctan((x-S)/y)-numpy.arctan((x+S)/y))
 
 # y-component of induced velocity
-def get_v( x, y, S, gamma ):
+def _get_v( x, y, S, gamma ):
     return gamma/(4*numpy.pi)*(numpy.log(((x+S)**2+y**2)/((x-S)**2+y**2)))
 
 # Constant strength vortex panel
@@ -49,10 +50,10 @@ class Panel(object):
         x0,y0 -- the x and y location of the starting point
         x1,y1 -- the x and y location of the ending point
         gamma -- the panel vortex strength. Defaults to zero.
-        
+
         Outputs:
-        A Panel object. Use help(Panel) to see all the methods.
-        
+        A Panel object.
+
         Examples:
         my_panel1 = Panel(-1,0,1,0)    # creates panel on x-axis with gamma=0
         my_panel2 = Panel(0,-1,0,1,4)  # creates panel on y-axis with gamma=4
@@ -71,27 +72,32 @@ class Panel(object):
         Inputs:
         x,y -- the x and y location where you want the velocity
         gamma -- the panel vortex strength. Defaults to Panel.gamma.
-        
+
         Outputs:
         u,v -- the x and y components of the velocity
-        
+
         Examples:
         my_panel = Panel(0,-1,0,1,4)           # creates panel on y-axis with gamma=4
-        u,v = my_panel.velocity(-1,0)          # finds the induced velocity on x-axis  
+        u,v = my_panel.velocity(-1,0)          # finds the induced velocity on x-axis
         u,v = my_panel.velocity(-1,0,gamma=1)  # finds the velocity using gamma=1 instead of 4
         """
-        if gamma is None: gamma = self.gamma # default gamma
-        xp,yp = self.transform_xy(x, y)      # transform
-        up = get_u(xp, yp, self.S, gamma)    # get u prime
-        vp = get_v(xp, yp, self.S, gamma)    # get v prime
-        return self.rotate_uv(up, vp)        # rotate back
+        if gamma is None: gamma = self.gamma  # default gamma
+        xp,yp = self.__transform_xy(x, y)     # transform
+        up = _get_u(xp, yp, self.S, gamma)    # get u prime
+        vp = _get_v(xp, yp, self.S, gamma)    # get v prime
+        return self.__rotate_uv(up, vp)       # rotate back
 
-    # plot the panel
     def plot(self):
+        """Plots the vortex panel as a black line segment
+
+        Examples:
+        my_panel = Panel(0,-1,0,1)             # creates panel on y-axis
+        my_panel.plot()                        # plot the panel
+        """
         return pyplot.plot(self.x,self.y,'k-',lw=2)
 
     # transform from global to panel coordinates
-    def transform_xy(self, x, y):
+    def __transform_xy(self, x, y):
         xt = x-self.xc               # shift x
         yt = y-self.yc               # shift y
         xp = xt*self.sx+yt*self.sy   # rotate x
@@ -99,22 +105,25 @@ class Panel(object):
         return xp, yp
 
     # rotate velocity back to global coordinates
-    def rotate_uv(self, up, vp):
+    def __rotate_uv(self, up, vp):
         u = up*self.sx-vp*self.sy    # reverse rotate u prime
         v = vp*self.sx+up*self.sy    # reverse rotate v prime
         return u, v
 
+
+## Panel array operations
+
 def get_array(panels,key):
     """ Generate numpy array of panel attributes
-    
-    Inputs: 
+
+    Inputs:
     panels   -- an array of Panel objects
-    key      -- a string naming the desired attribute. 
+    key      -- a string naming the desired attribute.
               Use help(panel) to see available attributes
-    
+
     Outputs:
     key_vals -- a numpy array of length(Panels) filled with the named attribute
-    
+
     Examples:
     circle = make_circle(N=32)   # make a Panel array
     xc = get_array(circle,'xc')  # get the x-location of each panel center
@@ -122,11 +131,28 @@ def get_array(panels,key):
     """
     return numpy.array([getattr(p,key) for p in panels])
 
+def distance(panels):
+    """ Find the cumulative distance of the path along a set of panels
+
+    Inputs:
+    panels  -- array of Panels
+
+    Outputs:
+    s       -- array of distances from the edge of the first
+               panel to the center of each panel
+
+    Examples:
+    foil = make_jukowski(N=64)       # define the geometry
+    s = distance(foil)               # get the panel path distance
+    """
+    S = get_array(panels,'S')
+    return numpy.cumsum(2*S)-S
+
 
 ### Visualize
 
 # get the velocity induced by panels and unit velocity at angle `alpha`.
-def flow_velocity(panels,x,y,alpha=0):
+def __flow_velocity(panels,x,y,alpha=0):
     # the flow angle must be a scalar
     if(isinstance(alpha, (list, tuple, numpy.ndarray))):
         raise TypeError('Only accepts scalar alpha')
@@ -143,32 +169,32 @@ def flow_velocity(panels,x,y,alpha=0):
 
     return u, v
 
-def magnitude(u,v): return numpy.sqrt(u**2+v**2)
+def __magnitude(u,v): return numpy.sqrt(u**2+v**2)
 
 # plot the flow on a grid
 def plot_flow(panels,alpha=0,size=2,N_grid=100,
               contour_min=0,contour_max=None,
-              contour_fun=magnitude,contour_lab='Velocity magnitude'):
+              contour_fun=__magnitude,contour_lab='Velocity magnitude'):
     """ Plot the flow induced by a Panel array and the background flow
-    
-    Notes: 
+
+    Notes:
     Assumes unit magnitude background flow, |U|=1.
     The same alpha must be used in both solve_gamma and plot_flow or
       the wrong flow will be displayed. See example below.
 
-    Inputs: 
+    Inputs:
     panels  -- an array of Panel objects
-    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0 
+    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0
     size    -- size of the domain; corners are at (-size,-size) and (size,size); default 2
     N_grid  -- number of points in the domain grid in each direction; default 100
     contour_min -- the minimum contour value for the velocity magnitude; defaults to 0
     contour_max -- the maximum contour value for the velocity magnitude; defaults to max in domain
     contour_fun -- function of u,v to contour; defaults to |u|
     contour_lab -- contour label; defaults to 'Velocity magnitude'
-    
+
     Outputs:
     pyplot object of the flow vectors, contours of the velocity magnitude, and the panels.
-    
+
     Examples:
     circle = make_circle(N=32)      # make a Panel array
     solve_gamma(circle, alpha=0.1)  # solve for Panel strengths
@@ -180,7 +206,7 @@ def plot_flow(panels,alpha=0,size=2,N_grid=100,
     x, y = numpy.meshgrid(X, Y)             # generates a mesh grid
 
     # get the velocity from the free stream and panels
-    u,v = flow_velocity(panels,x,y,alpha)
+    u,v = __flow_velocity(panels,x,y,alpha)
 
     # plot it
     pyplot.figure(figsize=(6,5))        # set size
@@ -189,26 +215,26 @@ def plot_flow(panels,alpha=0,size=2,N_grid=100,
 
     # plot contours
     m = contour_fun(u,v)
-    velocity = pyplot.contourf(x, y, m, vmin=contour_min, vmax=contour_max) 
+    velocity = pyplot.contourf(x, y, m, vmin=contour_min, vmax=contour_max)
     cbar = pyplot.colorbar(velocity)
     cbar.set_label(contour_lab, fontsize=14);
 
     # plot vector field
     pyplot.quiver(x[::4,::4], y[::4,::4],
-                  u[::4,::4], v[::4,::4]) 
+                  u[::4,::4], v[::4,::4])
     # plot panels
     for p in panels: p.plot()
 
 ### Flow solvers
 
 # define the influence of panel_j on panel_i
-def influence(panel_i,panel_j):
+def __influence(panel_i,panel_j):
     u,v = panel_j.velocity(panel_i.xc,panel_i.yc,gamma=1)
     return u*panel_i.sx+v*panel_i.sy
 
 
 # construct the linear system to enforce no-slip on every panel
-def construct_A_b(panels,alpha=0):
+def __construct_A_b(panels,alpha=0):
     # construct matrix
     N = len(panels)
     A = numpy.empty((N, N))                     # empty matrix
@@ -216,7 +242,7 @@ def construct_A_b(panels,alpha=0):
     for i, p_i in enumerate(panels):
         for j, p_j in enumerate(panels):
             if i != j:                          # off-diagonals
-                A[i,j] = influence(p_i,p_j)
+                A[i,j] = __influence(p_i,p_j)
 
     # construct the RHS
     if(isinstance(alpha, (list, tuple, numpy.ndarray))):
@@ -226,25 +252,25 @@ def construct_A_b(panels,alpha=0):
 
 def solve_gamma(panels,alpha=0):
     """ Determine the vortex strength on an array of Panels
-    
-    Notes: 
+
+    Notes:
     Assumes unit magnitude background flow, |U|=1.
     The same alpha must be used in both solve_gamma and plot_flow or
       the wrong flow will be displayed. See example below.
 
-    Inputs: 
+    Inputs:
     panels  -- an array of Panel objects (modified on output)
-    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0 
-    
+    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0
+
     Outputs:
     panels  -- the same array of Panels, but with the gamma attribute updated.
-    
+
     Examples:
     circle = make_circle(N=32)      # make a Panel array
     solve_gamma(circle, alpha=0.1)  # solve for Panel strengths
     plot_flow(circle, alpha=0.1)    # plot the flow
     """
-    A,b = construct_A_b(panels,alpha)  # construct linear system
+    A,b = __construct_A_b(panels,alpha)# construct linear system
     gamma = numpy.linalg.solve(A, b)   # solve for gamma!
     for i,p_i in enumerate(panels):
         p_i.gamma = gamma[i]           # update panels
@@ -252,26 +278,26 @@ def solve_gamma(panels,alpha=0):
 
 def solve_gamma_kutta(panels,alpha=0):
     """ Determine gamma while enforcing the Kutta condition on panels[(0,-1)]
-    
-    Notes: 
+
+    Notes:
     Same as solve_gamma, but enforces Kutta condition on the first and last panel.
     Assumes unit magnitude background flow, |U|=1.
     The same alpha must be used in both solve_gamma and plot_flow or
       the wrong flow will be displayed. See example below.
 
-    Inputs: 
+    Inputs:
     panels  -- an array of Panel objects (modified on output)
-    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0 
-    
+    alpha   -- angle of attack relative to x-axis; must be a scalar; default 0
+
     Outputs:
     panels  -- the same array of Panels, but with the gamma attribute updated.
-    
+
     Examples:
     foil = make_jukowski(N=32)          # make a Panel array
     solve_gamma_kutta(foil, alpha=0.1)  # solve for Panel strengths
     plot_flow(foil, alpha=0.1)          # plot the flow
     """
-    A,b = construct_A_b(panels,alpha)   # construct linear system
+    A,b = __construct_A_b(panels,alpha) # construct linear system
     A[:,(0,-1)] += 1                    # gamma[0] + gamma[N-1] = 0
     gamma = numpy.linalg.solve(A, b)    # solve for gamma!
     for i,p_i in enumerate(panels):
@@ -281,28 +307,28 @@ def solve_gamma_kutta(panels,alpha=0):
 ### Geometries
 
 # polygonal shape function
-def polygon(theta,N_sides):
+def _polygon(theta,N_sides):
     a = theta % (2.*numpy.pi/N_sides)-numpy.pi/N_sides
     r = numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
     return [r*numpy.cos(theta),r*numpy.sin(theta)]
 
 def make_polygon(N_panels,N_sides):
     """ Make a polygonal array of Panels
-    
-    Inputs: 
+
+    Inputs:
     N_panels -- number of panels to use
     N_sides  -- number of sides in the polygon
-    
+
     Outputs:
     panels  -- an array of Panels; see help(Panel)
-    
+
     Examples:
     triangle = make_polygon(N_panels=33,N_sides=3)  # make a triangular Panel array
     for panel in triangle: panel.plot()             # plot the geometry
     """
     # define the end-points
     theta = numpy.linspace(0, -2*numpy.pi, N_panels+1)   # equal radial spacing
-    x_ends,y_ends = polygon(theta, N_sides)              # get the coordinates
+    x_ends,y_ends = _polygon(theta, N_sides)             # get the coordinates
 
     # define the panels
     panels = numpy.empty(N_panels, dtype=object)         # empty array of panels
@@ -313,15 +339,15 @@ def make_polygon(N_panels,N_sides):
 
 def make_ellipse(N, t_c=1, xcen=0, ycen=0):
     """ Make an elliptical array of Panels; defaults to circle
-    
-    Inputs: 
+
+    Inputs:
     N         -- number of panels to use
     t_c       -- thickness/chord of the ellipse; default 1 (circle)
     xcen,ycen -- x,y location of the ellipse center
-    
+
     Outputs:
     panels  -- an array of Panels; see help(Panel)
-    
+
     Examples:
     ellipse = make_circle(N=32,t_c=0.5)   # make a 1:2 elliptical Panel array
     for panel in ellipse: panel.plot()    # plot the geometry
@@ -338,25 +364,25 @@ def make_ellipse(N, t_c=1, xcen=0, ycen=0):
     return ellipse
 
 # make circle and special case of make_ellipse
-def make_circle(N, xcen=0, ycen=0): 
+def make_circle(N, xcen=0, ycen=0):
     return make_ellipse(N, t_c=1, xcen=xcen, ycen=ycen)
 
 def make_jukowski(N, dx=0.18, dtheta=0, dr = 0):
     """ Make a foil-shaped array of Panels using the Jukowski mapping
 
     Note:
-    Different foil-shapes are obtained by scaling and rotating a circle 
+    Different foil-shapes are obtained by scaling and rotating a circle
     before applying the mapping.
 
-    Inputs: 
+    Inputs:
     N         -- number of panels to use
     dx        -- amount to scale circle around (1,0)
     dtheta    -- amount to rotate circle around (1,0)
     dr        -- amount to scale circle around (0,0)
-    
+
     Outputs:
     panels  -- an array of Panels; see help(Panel)
-    
+
     Examples:
     foil = make_jukowski(N=64,dtheta=0.1)   # make a cambered foil Panel array
     for panel in foil: panel.plot()         # plot the geometry
