@@ -7,14 +7,11 @@ Class:
     Panel
 
 Methods:
+    make_polygon, make_ellipse, make_circle, make_jukowski
+    solve_gamma, solve_gamma_kutta
     plot_flow
-    solve_gamma
-    solve_gamma_kutta
     get_array
-    make_polygon
-    make_ellipse
-    make_circle
-    make_jukowski
+    distance
 
 Imports: numpy, pyplot from matplotlib
 """
@@ -79,7 +76,7 @@ class Panel(object):
         Examples:
         my_panel = Panel(0,-1,0,1,4)           # creates panel on y-axis with gamma=4
         u,v = my_panel.velocity(-1,0)          # finds the induced velocity on x-axis
-        u,v = my_panel.velocity(-1,0,gamma=1)  # finds the velocity using gamma=1 instead of 4
+        u,v = my_panel.velocity(-1,0,gamma=1)  # finds the velocity using gamma=1 (not 4)
         """
         if gamma is None: gamma = self.gamma  # default gamma
         xp,yp = self.__transform_xy(x, y)     # transform
