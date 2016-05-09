@@ -138,9 +138,13 @@ def split(panels):
     solve_gamma_kutta(foil,alpha=01) #2. Solve for the potential flow
     foilTop,foilBot = split(foil)    #3. Split the boundary layers
     """
-    top = [p for p in panels if p.gamma<=0]
-    bottom = [p for p in panels if p.gamma>=0]
-    bottom = bottom[::-1]               # reverse array
+    gamma = get_array(panels,'gamma')
+    back = numpy.where(numpy.logical_and(
+            gamma>=0,numpy.roll(gamma,1)<=0))  # find rear stagnation point
+    rolled = numpy.roll(panels,-back[0])       # make this index 0
+    top = [p for p in rolled if p.gamma<=0]    # panels where flow with s
+    bottom = [p for p in rolled if p.gamma>=0] # panels where flow against s
+    bottom = bottom[::-1]                      # reverse `against` array
     return top,bottom
 
 def panel_march(panels,nu):
