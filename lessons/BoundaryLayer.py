@@ -77,16 +77,14 @@ def march(x,u_e,nu):
     delta = numpy.full_like(x,0.)
     lam = numpy.full_like(x,lam0)
 
-    # Initial conditions must be a stagnation point. If u_e[0]>0
-    # assume stagnation is at x=0 and integrate from x=0..x[0].
-    if u_e[0]<0.01:                     # stagnation point
+    # set initial condition on delta
+    if du_e[0]>0:
         delta[0] = numpy.sqrt(lam0*nu/du_e[0])
-    elif x[0]>0:                        # just downstream
-        delta[0] = numpy.sqrt(lam0*nu*x[0]/u_e[0])
-        delta[0] += 0.5*x[0]*_g_pohl(delta[0],0,u_e,du_e,nu)
-        lam[0] = delta[0]**2*du_e[0]/nu
+    elif x[0]>0 and u_e[0]>0:
+        delta[0] = 5.836*numpy.sqrt(nu*x[0]/u_e[0])
+        lam[0] = 0
     else:
-        raise ValueError('x=0 must be stagnation point')
+        raise ValueError('bad u_e near x=0')
 
     # march!
     for i in range(len(x)-1):
