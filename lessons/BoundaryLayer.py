@@ -58,7 +58,7 @@ def march(x,u_e,nu):
     are meaningless.
 
     Inputs:
-    x   -- array of distances along the boundary layer; must be increasing
+    x   -- array of distances along the boundary layer; must be positive and increasing
     u_e -- array of external velocities at locations `x`
     nu  -- kinematic viscosity; must be scalar
 
@@ -68,7 +68,7 @@ def march(x,u_e,nu):
     iSep  -- array index of separation point
 
     Examples:
-    s = numpy.linspace(0,1,16)               # define distance array
+    s = numpy.linspace(0,numpy.pi,16)        # define distance array
     u_e = numpy.sin(s)                       # define external velocity (circle example)
     delta,lam,iSep = march(x=s,u_e,nu=1e-5)  # march along to the point of separation
     """
@@ -80,9 +80,9 @@ def march(x,u_e,nu):
     # set initial condition on delta
     if du_e[0]>0:
         delta[0] = numpy.sqrt(lam0*nu/du_e[0])
-    elif x[0]>0 and u_e[0]>0:
-        delta[0] = 5.836*numpy.sqrt(nu*x[0]/u_e[0])
+    elif x[0]>0 and u_e[0]>0: # use flat plate soln.
         lam[0] = 0
+        delta[0] = 5.836*numpy.sqrt(nu*x[0]/u_e[0])
     else:
         raise ValueError('bad u_e near x=0')
 
@@ -111,7 +111,7 @@ def sep(y,lam,iSep):
     ySep  -- interpolated value at the point lambda=-12
 
     Examples:
-    s = numpy.linspace(0,1,16)               # define distance array
+    s = numpy.linspace(0,numpy.pi,16)        # define distance array
     u_e = numpy.sin(s)                       # define external velocity (circle example)
     delta,lam,iSep = march(x=s,u_e,nu=1e-5)  # march along to the point of separation
     sSep = sep(s,lam,iSep)                   # find s value of separation
@@ -140,9 +140,9 @@ def split(panels):
     back = numpy.where(numpy.logical_and(
             gamma>=0,numpy.roll(gamma,1)<=0))  # find rear stagnation point
     rolled = numpy.roll(panels,-back[0])       # make this index 0
-    top = [p for p in rolled if p.gamma<=0]    # panels where flow with s
-    bottom = [p for p in rolled if p.gamma>=0] # panels where flow against s
-    bottom = bottom[::-1]                      # reverse `against` array
+    top = [p for p in rolled if p.gamma<=0]    # panels where flow aligns with s
+    bottom = [p for p in rolled if p.gamma>=0] # panels where flow is against s
+    bottom = bottom[::-1]                      # reverse indices to align bottom
     return top,bottom
 
 def panel_march(panels,nu):
