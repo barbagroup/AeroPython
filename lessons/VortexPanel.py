@@ -359,7 +359,8 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
     dx        -- amount to scale circle around (1,0)
     dtheta    -- amount to rotate circle around (1,0)
     dr        -- amount to scale circle around (0,0)
-    xcen,ycen -- location of the center; defaults to origin
+    scale     -- amount to scale foil after transform; defaults to 1
+    xcen,ycen -- amount to shift foil after transform; defaults to 0
 
     Outputs:
     panels  -- an array of Panels; see help(Panel)
