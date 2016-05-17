@@ -70,7 +70,7 @@ def march(x,u_e,nu):
     Examples:
     s = numpy.linspace(0,numpy.pi,16)        # define distance array
     u_e = numpy.sin(s)                       # define external velocity (circle example)
-    delta,lam,iSep = march(x=s,u_e,nu=1e-5)  # march along to the point of separation
+    delta,lam,iSep = march(s,u_e,nu=1e-5)    # march along to the point of separation
     """
     dx = numpy.diff(x)
     du_e = numpy.gradient(u_e,numpy.gradient(x))
@@ -92,11 +92,17 @@ def march(x,u_e,nu):
                           u_e,du_e,nu)  # ...additional arguments
         lam[i+1] = delta[i+1]**2*du_e[i+1]/nu
 
-        if lam[i+1] < -12: i-=1; break  # separation condition
+        if lam[i+1] < -12: break        # separation condition
 
-    return delta,lam,i+1                # return with separation index
+    # find separation index
+    if(lam[i+1]>-12):
+        iSep = i+1
+    else:
+        iSep = numpy.interp(12,-lam[i:i+2],[i,i+1])
 
-def sep(y,lam,iSep):
+    return delta,lam,iSep               # return with separation index
+
+def sep(y,iSep):
     """ Interpolate value from array at the separation point
 
     Notes:
@@ -104,7 +110,6 @@ def sep(y,lam,iSep):
 
     Inputs:
     y     -- array of values to be inpterpolated
-    lam   -- array of shape function values from `march`
     iSep  -- array index of separation point
 
     Outputs:
@@ -113,10 +118,11 @@ def sep(y,lam,iSep):
     Examples:
     s = numpy.linspace(0,numpy.pi,16)        # define distance array
     u_e = numpy.sin(s)                       # define external velocity (circle example)
-    delta,lam,iSep = march(x=s,u_e,nu=1e-5)  # march along to the point of separation
-    sSep = sep(s,lam,iSep)                   # find s value of separation
+    delta,lam,iSep = march(s,u_e,nu=1e-5)    # march along to the point of separation
+    sSep = sep(s,iSep)                       # find separation distance
     """
-    return numpy.interp( 12,-lam[iSep:iSep+2],y[iSep:iSep+2])
+    i = numpy.ceil(iSep)-1
+    return numpy.interp(iSep,[i,i+1],y[i:i+2])
 
 ### Boundary layers on vortex panels
 from VortexPanel import distance, get_array
@@ -182,6 +188,6 @@ def predict_separation_point(panels):
     xSep,ySep = panel_march(top)       #4. find separation on top BL panels
     """
     delta,lam,iSep = panel_march(panels,nu=1e-5)
-    xSep = sep(get_array(panels,'xc'),lam,iSep)
-    ySep = sep(get_array(panels,'yc'),lam,iSep)
+    xSep = sep(get_array(panels,'xc'),iSep)
+    ySep = sep(get_array(panels,'yc'),iSep)
     return xSep,ySep
