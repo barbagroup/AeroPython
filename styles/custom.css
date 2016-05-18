@@ -22,7 +22,7 @@
        }
     h5 {
         font-family: 'Alegreya Sans', sans-serif;
-    }	   
+    }
     .CodeMirror{
             font-family: "Source Code Pro";
 			font-size: 90%;
@@ -38,7 +38,7 @@
         margin-bottom: 0.5em;
         margin-top: 0.5em;
         display: block;
-    }	
+    }
     .text_cell_render h5 {
         font-weight: 300;
         font-size: 16pt;
@@ -48,15 +48,19 @@
         margin-top: 0.5em;
         display: block;
     }
-    
+
     .warning{
         color: rgb( 240, 20, 20 )
-        }  
+        }
+</style>
+<style>
+  img[alt=short] { height: 200px; }
+  img[alt=medium] { height: 300px; }
 </style>
 <script>
     MathJax.Hub.Config({
                         TeX: {
-                           extensions: ["AMSmath.js"], 
+                           extensions: ["AMSmath.js"],
                            equationNumbers: { autoNumber: "AMS", useLabelIds: true}
                            },
                 tex2jax: {

@@ -74,6 +74,7 @@ def march(x,u_e,nu):
     """
     dx = numpy.diff(x)
     du_e = numpy.gradient(u_e,numpy.gradient(x))
+    du_e[0] = (3.*u_e[0]-4.*u_e[1]+u_e[2])/(2.*(x[0]-x[1]))    # correct initial value
     delta = numpy.full_like(x,0.)
     lam = numpy.full_like(x,lam0)
 
@@ -118,8 +119,8 @@ def sep(y,iSep):
     Examples:
     s = numpy.linspace(0,numpy.pi,16)        # define distance array
     u_e = numpy.sin(s)                       # define external velocity (circle example)
-    delta,lam,iSep = march(s,u_e,nu=1e-5)    # march along to the point of separation
-    sSep = sep(s,iSep)                       # find separation distance
+    delta,lam,iSep = bl.march(s,u_e,nu=1e-5) # march along to the point of separation
+    sSep = bl.sep(s,iSep)                    # find separation distance
     """
     i = numpy.ceil(iSep)-1
     return numpy.interp(iSep,[i,i+1],y[i:i+2])
@@ -138,9 +139,9 @@ def split(panels):
     bottom  -- array of Panels defining the bottom BL
 
     Examples:
-    foil = make_jukowski(N=64)       #1. Define the geometry
-    solve_gamma_kutta(foil,alpha=01) #2. Solve for the potential flow
-    foilTop,foilBot = split(foil)    #3. Split the boundary layers
+    foil = vp.make_jukowski(N=64)          #1. Define the geometry
+    vp.solve_gamma_kutta(foil,alpha=0.1)   #2. Solve for the potential flow
+    foil_top,foil_bot = bl.split(foil)     #3. Split the boundary layers
     """
     gamma = get_array(panels,'gamma')
     back = numpy.where(numpy.logical_and(
@@ -163,10 +164,10 @@ def panel_march(panels,nu):
     iSep  -- array index of separation point
 
     Examples:
-    foil = make_jukowski(N=64)         #1. define the geometry
-    solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
-    top,bottom = split(foil)           #3. split the panels in BL segments
-    delta,lam,iSep = panel_march(top)  #4. march along top BL panels
+    circle = vp.make_circle(N=64)                #1. set-up geometry
+    vp.solve_gamma_kutta(circle)                 #2. solve flow
+    top,bottom = bl.split(circle)                #3. split panels
+    delta,lam,iSep = bl.panel_march(top,nu=1e-5) #4. march along the BL
     """
     s = distance(panels)                    # distance
     u_e = abs(get_array(panels,"gamma"))    # velocity
@@ -182,10 +183,10 @@ def predict_separation_point(panels):
     xSep,ySep -- x,y location of the boundary layer separation point
 
     Examples:
-    foil = make_jukowski(N=64)         #1. define the geometry
-    solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
-    top,bottom = split(foil)           #3. split the panels in BL segments
-    xSep,ySep = panel_march(top)       #4. find separation on top BL panels
+    foil = vp.make_jukowski(N=64)         #1. define the geometry
+    vp.solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
+    top,bottom = bl.split(foil)           #3. split the panels in BL segments
+    xSep,ySep = bl.panel_march(top)       #4. find separation on top BL panels
     """
     delta,lam,iSep = panel_march(panels,nu=1e-5)
     xSep = sep(get_array(panels,'xc'),iSep)
