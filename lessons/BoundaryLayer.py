@@ -164,13 +164,13 @@ def panel_march(panels,nu):
     iSep  -- array index of separation point
 
     Examples:
-    circle = vp.make_circle(N=64)                #1. set-up geometry
-    vp.solve_gamma_kutta(circle)                 #2. solve flow
-    top,bottom = bl.split(circle)                #3. split panels
+    circle = vp.make_circle(N=64)                #1. make the geometry
+    vp.solve_gamma_kutta(circle)                 #2. solve the pflow
+    top,bottom = bl.split(circle)                #3. split the panels
     delta,lam,iSep = bl.panel_march(top,nu=1e-5) #4. march along the BL
     """
     s = distance(panels)                    # distance
-    u_e = abs(get_array(panels,"gamma"))    # velocity
+    u_e = abs(get_array(panels,'gamma'))    # velocity
     return march(s,u_e,nu)                  # march
 
 def predict_separation_point(panels):
@@ -183,12 +183,11 @@ def predict_separation_point(panels):
     xSep,ySep -- x,y location of the boundary layer separation point
 
     Examples:
-    foil = vp.make_jukowski(N=64)         #1. define the geometry
+    foil = vp.make_jukowski(N=64)         #1. make the geometry
     vp.solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
-    top,bottom = bl.split(foil)           #3. split the panels in BL segments
-    xSep,ySep = bl.panel_march(top)       #4. find separation on top BL panels
+    top,bottom = bl.split(foil)           #3. split the panels
+    x_top,y_top = bl.panel_march(top)     #4. find separation on top BL panels
     """
     delta,lam,iSep = panel_march(panels,nu=1e-5)
-    xSep = sep(get_array(panels,'xc'),iSep)
-    ySep = sep(get_array(panels,'yc'),iSep)
-    return xSep,ySep
+    x,y = get_array(panels,'xc','yc')
+    return sep(x,iSep),sep(y,iSep)

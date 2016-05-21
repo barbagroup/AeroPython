@@ -113,22 +113,27 @@ class Panel(object):
 
 ## Panel array operations
 
-def get_array(panels,key):
-    """ Generate numpy array of panel attributes
+def get_array(panels,*args):
+    """ Generate numpy arrays of panel attributes
+
+    Notes:
+    Use help(panel) to see available attributes
 
     Inputs:
     panels   -- an array of Panel objects
-    key      -- a string naming the desired attribute.
-              Use help(panel) to see available attributes
+    args     -- names of the desired attributes;
 
     Outputs:
     key_vals -- a numpy array of length(Panels) filled with the named attribute
 
     Examples:
-    circle = vp.make_circle(N=32)   # make a Panel array
-    xc = vp.get_array(circle,'xc')  # get the x-location of each panel center
+    circle = vp.make_circle(N=32)           # make a Panel array
+    xc,yc = vp.get_array(circle,'xc','yc')  # get the x,y-location panel centers
     """
-    return numpy.array([getattr(p,key) for p in panels])
+    if len(args)==1:
+        return numpy.array([getattr(p,args[0]) for p in panels])
+    else:
+        return [get_array(panels,key) for key in args]
 
 def distance(panels):
     """ Find the cumulative distance of the path along a set of panels
@@ -278,8 +283,7 @@ def solve_gamma_kutta(panels,alpha=0):
 # polygonal shape function
 def _polygon(theta,N_sides):
     a = theta % (2.*numpy.pi/N_sides)-numpy.pi/N_sides
-    r = numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
-    return [r*numpy.cos(theta),r*numpy.sin(theta)]
+    return numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
 
 def make_polygon(N_panels,N_sides):
     """ Make a polygonal array of Panels
@@ -296,8 +300,9 @@ def make_polygon(N_panels,N_sides):
     for panel in triangle: panel.plot()                # plot the geometry
     """
     # define the end-points
-    theta = numpy.linspace(0, -2*numpy.pi, N_panels+1)   # equal radial spacing
-    x_ends,y_ends = _polygon(theta, N_sides)             # get the coordinates
+    theta = numpy.linspace(0, -2*numpy.pi, N_panels+1)   # equally spaced theta
+    r = _polygon(theta, N_sides)                         # get r(theta)
+    x_ends,y_ends = r*numpy.cos(theta),r*numpy.sin(theta)# get the coordinates
 
     # define the panels
     panels = numpy.empty(N_panels, dtype=object)         # empty array of panels
