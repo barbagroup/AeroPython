@@ -21,15 +21,14 @@ from matplotlib import pyplot
 
 ### Fundamentals
 
-# x-component of induced velocity
 def _get_u( x, y, S, gamma ):
+    "x-component of induced velocity"
     return gamma/(2*numpy.pi)*(numpy.arctan((x-S)/y)-numpy.arctan((x+S)/y))
 
-# y-component of induced velocity
 def _get_v( x, y, S, gamma ):
+    "y-component of induced velocity"
     return gamma/(4*numpy.pi)*(numpy.log(((x+S)**2+y**2)/((x-S)**2+y**2)))
 
-# Constant strength vortex panel
 class Panel(object):
     """Constant strength vortex panel class
 
@@ -94,18 +93,18 @@ class Panel(object):
         my_panel = vp.Panel(0,-1,0,1)          # creates panel on y-axis
         my_panel.plot()                        # plot the panel
         """
-        return pyplot.plot(self.x,self.y,c=color,lw=2)
+        return pyplot.plot(self.x, self.y, c=color, lw=2)
 
-    # transform from global to panel coordinates
     def __transform_xy(self, x, y):
+        "transform from global to panel coordinates"
         xt = x-self.xc               # shift x
         yt = y-self.yc               # shift y
         xp = xt*self.sx+yt*self.sy   # rotate x
         yp = yt*self.sx-xt*self.sy   # rotate y
         return xp, yp
 
-    # rotate velocity back to global coordinates
     def __rotate_uv(self, up, vp):
+        "rotate velocity back to global coordinates"
         u = up*self.sx-vp*self.sy    # reverse rotate u prime
         v = vp*self.sx+up*self.sy    # reverse rotate v prime
         return u, v
@@ -155,8 +154,9 @@ def distance(panels):
 
 ### Visualize
 
-# get the velocity induced by panels and unit velocity at angle `alpha`.
 def _flow_velocity(panels,x,y,alpha=0):
+    "get the velocity induced by panels and unit velocity at angle `alpha`"
+
     # the flow angle must be a scalar
     if(isinstance(alpha, (list, tuple, numpy.ndarray))):
         raise TypeError('Only accepts scalar alpha')
@@ -173,7 +173,6 @@ def _flow_velocity(panels,x,y,alpha=0):
 
     return u, v
 
-# plot the flow on a grid
 def plot_flow(panels,alpha=0,size=2):
     """ Plot the flow induced by a Panel array and the background flow
 
@@ -221,14 +220,15 @@ def plot_flow(panels,alpha=0,size=2):
 
 ### Flow solvers
 
-# define the influence of panel_j on panel_i
 def _influence(panel_i,panel_j):
+    "define the influence of panel_j on panel_i"
     u,v = panel_j.velocity(panel_i.xc,panel_i.yc,gamma=1)
     return u*panel_i.sx+v*panel_i.sy
 
 
-# construct the linear system to enforce no-slip on every panel
 def _construct_A_b(panels,alpha=0):
+    "construct the linear system to enforce no-slip on every panel"
+
     # construct matrix
     N = len(panels)
     A = numpy.empty((N, N))                     # empty matrix
@@ -274,14 +274,14 @@ def solve_gamma(panels,alpha=0,kutta=[]):
     for i,p_i in enumerate(panels):
         p_i.gamma = gamma[i]              # update panels
 
-# special case of solve_gamma with kutta=[(0,-1)]
 def solve_gamma_kutta(panels,alpha=0):
+    "special case of solve_gamma with kutta=[(0,-1)]"
     return solve_gamma(panels,alpha,kutta=[(0,-1)])
 
 ### Geometries
 
-# polygonal shape function
 def _polygon(theta,N_sides):
+    "polygonal shape function"
     a = theta % (2.*numpy.pi/N_sides)-numpy.pi/N_sides
     return numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
 
@@ -338,8 +338,8 @@ def make_ellipse(N, t_c, c=2, xcen=0, ycen=0):
 
     return ellipse
 
-# make circle as special case of make_ellipse
 def make_circle(N, r=2, xcen=0, ycen=0):
+    "make circle as special case of make_ellipse"
     return make_ellipse(N, t_c=1, c=r, xcen=xcen, ycen=ycen)
 
 def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
