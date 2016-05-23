@@ -18,7 +18,7 @@ Imports: numpy, pyplot from matplotlib
 
 import numpy
 from matplotlib import pyplot
-
+numpy.seterr(divide='ignore')
 ### Fundamentals
 
 def _get_u( x, y, S, gamma ):
@@ -218,30 +218,24 @@ def plot_flow(panels,alpha=0,size=2):
     # plot panels
     for p in panels: p.plot()
 
-### Flow solvers
 
-def _influence(panel_i,panel_j):
-    "define the influence of panel_j on panel_i"
-    u,v = panel_j.velocity(panel_i.xc,panel_i.yc,gamma=1)
-    return u*panel_i.sx+v*panel_i.sy
-
+### Flow solver
 
 def _construct_A_b(panels,alpha=0):
     "construct the linear system to enforce no-slip on every panel"
 
-    # construct matrix
-    N = len(panels)
-    A = numpy.empty((N, N))                     # empty matrix
-    numpy.fill_diagonal(A, 0.5)                 # fill diagonal with 1/2
-    for i, p_i in enumerate(panels):
-        for j, p_j in enumerate(panels):
-            if i != j:                          # off-diagonals
-                A[i,j] = _influence(p_i,p_j)
+    # get arrays
+    xc,yc,sx,sy = get_array(panels,'xc','yc','sx','sy')
+
+    # construct the matrix
+    A = numpy.empty((len(xc), len(xc)))      # empty matrix
+    for j, p_j in enumerate(panels):         # loop over panels
+        u,v = p_j.velocity(xc,yc,gamma=1)      # f_j at all panel centers
+        A[:,j] = u*sx+v*sy                     # tangential component
+    numpy.fill_diagonal(A, 0.5)              # fill diagonal with 1/2
 
     # construct the RHS
-    if(isinstance(alpha, (list, tuple, numpy.ndarray))):
-        raise TypeError('Only accepts scalar alpha')
-    b = [-numpy.cos(alpha)*p.sx-numpy.sin(alpha)*p.sy for p in panels]
+    b = -numpy.cos(alpha)*sx-numpy.sin(alpha)*sy
     return A, b
 
 def solve_gamma(panels,alpha=0,kutta=[]):
@@ -267,6 +261,10 @@ def solve_gamma(panels,alpha=0,kutta=[]):
     vp.solve_gamma(foil, alpha=0.1, kutta=[(0,-1)])  # solve for Panel strengths
     vp.plot_flow(foil, alpha=0.1)                    # plot the flow
     """
+    # catch iterated alpha
+    if(isinstance(alpha, (list, tuple, numpy.ndarray))):
+        raise TypeError('Only accepts scalar alpha')
+
     A,b = _construct_A_b(panels,alpha)    # construct linear system
     for i in kutta:                       # loop through indices
         A[i[0]:i[1],i] += 1               # apply kutta condition
