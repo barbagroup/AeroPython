@@ -164,17 +164,18 @@ def panel_march(panels,nu):
     iSep  -- array index of separation point
 
     Examples:
-    circle = vp.make_circle(N=64)                #1. make the geometry
-    vp.solve_gamma_kutta(circle)                 #2. solve the pflow
-    top,bottom = bl.split(circle)                #3. split the panels
-    delta,lam,iSep = bl.panel_march(top,nu=1e-5) #4. march along the BL
+    nu = 1e-5
+    circle = vp.make_circle(N=64)           #1. make the geometry
+    vp.solve_gamma(circle)                  #2. solve the pflow
+    top,bottom = bl.split(circle)           #3. split the panels
+    delta,lam,iSep = bl.panel_march(top,nu) #4. march along the BL
     """
     s = distance(panels)                    # distance
     u_e = abs(get_array(panels,'gamma'))    # velocity
     return march(s,u_e,nu)                  # march
 
-def predict_separation_point(panels):
-    """ Predict separation on a set of BL panels
+def panel_sep_point(panels):
+    """ Predict separation point on a set of BL panels
 
     Inputs:
     panels    -- array of Panels which have been solved and split
@@ -186,7 +187,7 @@ def predict_separation_point(panels):
     foil = vp.make_jukowski(N=64)         #1. make the geometry
     vp.solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
     top,bottom = bl.split(foil)           #3. split the panels
-    x_top,y_top = bl.panel_march(top)     #4. find separation on top BL panels
+    x_top,y_top = bl.panel_sep_point(top) #4. find separation point
     """
     delta,lam,iSep = panel_march(panels,nu=1e-5)
     x,y = get_array(panels,'xc','yc')
