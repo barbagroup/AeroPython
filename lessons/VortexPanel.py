@@ -309,13 +309,12 @@ def make_polygon(N_panels,N_sides):
 
     return panels
 
-def make_ellipse(N, t_c, c=2, xcen=0, ycen=0):
+def make_ellipse(N, t_c, xcen=0, ycen=0):
     """ Make an elliptical array of Panels; defaults to circle
 
     Inputs:
     N         -- number of panels to use
     t_c       -- thickness/chord of the ellipse
-    c         -- chord of the ellipse; defaults to 2
     xcen,ycen -- location of the ellipse center; defaults to origin
 
     Outputs:
@@ -326,8 +325,8 @@ def make_ellipse(N, t_c, c=2, xcen=0, ycen=0):
     for panel in ellipse: panel.plot()     # plot the geometry
     """
     theta = numpy.linspace(0, -2*numpy.pi, N+1)
-    x_ends = 0.5*numpy.cos(theta)*c+xcen
-    y_ends = 0.5*numpy.sin(theta)*c*t_c+ycen
+    x_ends = numpy.cos(theta)+xcen
+    y_ends = numpy.sin(theta)*t_c+ycen
 
     # define the panels
     ellipse = numpy.empty(N, dtype=object)
@@ -336,11 +335,11 @@ def make_ellipse(N, t_c, c=2, xcen=0, ycen=0):
 
     return ellipse
 
-def make_circle(N, r=2, xcen=0, ycen=0):
+def make_circle(N, xcen=0, ycen=0):
     "make circle as special case of make_ellipse"
-    return make_ellipse(N, t_c=1, c=r, xcen=xcen, ycen=ycen)
+    return make_ellipse(N, t_c=1, xcen=xcen, ycen=ycen)
 
-def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
+def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     """ Make a foil-shaped array of Panels using the Jukowski mapping
 
     Note:
@@ -349,11 +348,9 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
 
     Inputs:
     N         -- number of panels to use
-    dx        -- amount to scale circle around (1,0)
-    dtheta    -- amount to rotate circle around (1,0)
-    dr        -- amount to scale circle around (0,0)
-    scale     -- amount to scale foil after transform; defaults to 1
-    xcen,ycen -- amount to shift foil after transform; defaults to 0
+    dx        -- negative extent beyond x = -1
+    dtheta    -- angle of rotation around (1,0)
+    dr        -- radius extent beyond r = 1
 
     Outputs:
     panels  -- an array of Panels; see help(Panel)
@@ -362,7 +359,7 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
     foil = vp.make_jukowski(N=64,dtheta=0.1) # make a cambered foil Panel array
     for panel in foil: panel.plot()          # plot the geometry
     """
-    # define the shifted circle
+    # define the circle
     theta = numpy.linspace(0, -2*numpy.pi, N+1)
     r = (1+dx)/numpy.cos(dtheta)+dr
     x_ends = r*numpy.cos(theta)-(r-1-dr)
@@ -378,13 +375,9 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0, scale=1, xcen=0, ycen=0):
     x3_ends = x2_ends*(1+1./r2_ends)/2
     y3_ends = y2_ends*(1-1./r2_ends)/2
 
-    # center and scale
-    x4_ends = xcen+scale*x3_ends
-    y4_ends = ycen+scale*y3_ends
-
     # define the panels
     foil = numpy.empty(N, dtype=object)
     for i in range(N):
-        foil[i] = Panel(x4_ends[i], y4_ends[i], x4_ends[i+1], y4_ends[i+1])
+        foil[i] = Panel(x3_ends[i], y3_ends[i], x3_ends[i+1], y3_ends[i+1])
 
     return foil
