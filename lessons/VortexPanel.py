@@ -112,27 +112,27 @@ class Panel(object):
 
 ## Panel array operations
 
-def get_array(panels,*args):
+def get_array(panels,key,*args):
     """ Generate numpy arrays of panel attributes
 
     Notes:
     Use help(panel) to see available attributes
 
     Inputs:
-    panels   -- an array of Panel objects
-    args     -- names of the desired attributes;
+    panels       -- an array of Panel objects
+    key (,*args) -- one or more names of the desired attributes
 
     Outputs:
-    key_vals -- a numpy array of length(Panels) filled with the named attribute
+    key_vals     -- numpy arrays filled with the named attributes
 
     Examples:
     circle = vp.make_circle(N=32)           # make a Panel array
-    xc,yc = vp.get_array(circle,'xc','yc')  # get the x,y-location panel centers
+    xc,yc = vp.get_array(circle,'xc','yc')  # get arrays of the panel centers
     """
-    if len(args)==1:
-        return numpy.array([getattr(p,args[0]) for p in panels])
+    if len(args)==0:
+        return numpy.array([getattr(p,key) for p in panels])
     else:
-        return [get_array(panels,key) for key in args]
+        return [get_array(panels,k) for k in (key,)+args]
 
 def distance(panels):
     """ Find the cumulative distance of the path along a set of panels
