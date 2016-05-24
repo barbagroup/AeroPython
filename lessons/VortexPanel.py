@@ -7,6 +7,7 @@ Class:
     Panel
 
 Methods:
+    panelize, polygonal
     make_polygon, make_ellipse, make_circle, make_jukowski
     solve_gamma, solve_gamma_kutta
     plot_flow
@@ -129,7 +130,7 @@ def get_array(panels,key,*args):
     circle = vp.make_circle(N=32)           # make a Panel array
     xc,yc = vp.get_array(circle,'xc','yc')  # get arrays of the panel centers
     """
-    if len(args)==0:
+    if not args:
         return numpy.array([getattr(p,key) for p in panels])
     else:
         return [get_array(panels,k) for k in (key,)+args]
@@ -276,14 +277,17 @@ def solve_gamma_kutta(panels,alpha=0):
     "special case of solve_gamma with kutta=[(0,-1)]"
     return solve_gamma(panels,alpha,kutta=[(0,-1)])
 
+
 ### Geometries
 
-def _polygon(theta,N_sides):
-    "polygonal shape function"
-    a = theta % (2.*numpy.pi/N_sides)-numpy.pi/N_sides
-    return numpy.cos(numpy.pi/N_sides)/numpy.cos(a)
+def panelize(N,x,y):
+    "Turn x,y arrays into Panel array"
+    panels = numpy.empty(N, dtype=object)  # empty array of panels
+    for i in range(N):                     # fill the array
+        panels[i] = Panel(x[i], y[i], x[i+1], y[i+1])
+    return panels
 
-def make_polygon(N_panels,N_sides):
+def make_polygon(N,sides):
     """ Make a polygonal array of Panels
 
     Inputs:
@@ -298,16 +302,11 @@ def make_polygon(N_panels,N_sides):
     for panel in triangle: panel.plot()                # plot the geometry
     """
     # define the end-points
-    theta = numpy.linspace(0, -2*numpy.pi, N_panels+1)   # equally spaced theta
-    r = _polygon(theta, N_sides)                         # get r(theta)
-    x_ends,y_ends = r*numpy.cos(theta),r*numpy.sin(theta)# get the coordinates
-
-    # define the panels
-    panels = numpy.empty(N_panels, dtype=object)         # empty array of panels
-    for i in range(N_panels):                            # fill the array
-        panels[i] = Panel(x_ends[i], y_ends[i], x_ends[i+1], y_ends[i+1])
-
-    return panels
+    theta = numpy.linspace(0, -2*numpy.pi, N+1)          # equally spaced theta
+    r = numpy.cos(numpy.pi/sides)/numpy.cos(             # r(theta)
+            theta % (2.*numpy.pi/sides)-numpy.pi/sides)
+    x,y = r*numpy.cos(theta), r*numpy.sin(theta)         # get the coordinates
+    return panelize(N,x,y)
 
 def make_ellipse(N, t_c, xcen=0, ycen=0):
     """ Make an elliptical array of Panels; defaults to circle
@@ -325,26 +324,18 @@ def make_ellipse(N, t_c, xcen=0, ycen=0):
     for panel in ellipse: panel.plot()     # plot the geometry
     """
     theta = numpy.linspace(0, -2*numpy.pi, N+1)
-    x_ends = numpy.cos(theta)+xcen
-    y_ends = numpy.sin(theta)*t_c+ycen
-
-    # define the panels
-    ellipse = numpy.empty(N, dtype=object)
-    for i in range(N):
-        ellipse[i] = Panel(x_ends[i], y_ends[i], x_ends[i+1], y_ends[i+1])
-
-    return ellipse
+    x,y = numpy.cos(theta)+xcen, numpy.sin(theta)*t_c+ycen
+    return panelize(N,x,y)
 
 def make_circle(N, xcen=0, ycen=0):
-    "make circle as special case of make_ellipse"
+    "Make circle as special case of make_ellipse"
     return make_ellipse(N, t_c=1, xcen=xcen, ycen=ycen)
 
 def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     """ Make a foil-shaped array of Panels using the Jukowski mapping
 
     Note:
-    Different foil-shapes are obtained by scaling and rotating a circle
-    before applying the mapping.
+    Foil-shapes are obtained adjusting a circle and then mapping
 
     Inputs:
     N         -- number of panels to use
@@ -362,22 +353,13 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     # define the circle
     theta = numpy.linspace(0, -2*numpy.pi, N+1)
     r = (1+dx)/numpy.cos(dtheta)+dr
-    x_ends = r*numpy.cos(theta)-(r-1-dr)
-    y_ends = r*numpy.sin(theta)
+    x,y = r*numpy.cos(theta)-(r-1-dr), r*numpy.sin(theta)
 
     #rotate around (1,0)
     ds,dc = numpy.sin(dtheta),numpy.cos(dtheta)
-    x2_ends =  dc*(x_ends-1)+ds*y_ends+1
-    y2_ends = -ds*(x_ends-1)+dc*y_ends
-    r2_ends = x2_ends**2+y2_ends**2
+    x2,y2 =  dc*(x-1)+ds*y+1, -ds*(x-1)+dc*y
+    r2 = x2**2+y2**2
 
     # apply jukowski mapping
-    x3_ends = x2_ends*(1+1./r2_ends)/2
-    y3_ends = y2_ends*(1-1./r2_ends)/2
-
-    # define the panels
-    foil = numpy.empty(N, dtype=object)
-    for i in range(N):
-        foil[i] = Panel(x3_ends[i], y3_ends[i], x3_ends[i+1], y3_ends[i+1])
-
-    return foil
+    x3,y3 = x2*(1+1./r2)/2, y2*(1-1./r2)/2
+    return panelize(N,x3,y3)
