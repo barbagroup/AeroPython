@@ -271,9 +271,8 @@ def _flow_velocity(panels,x,y,alpha=0):
 
     # add the velocity contribution from each panel
     for p in panels:
-        u0,v0 = p.velocity(x,y)
-        u = u+u0
-        v = v+v0
+        u_j, v_j = p_j.velocity(x, y)
+        u, v = u+u_j, v+v_j
 
     return u, v
 
@@ -299,11 +298,11 @@ def plot_flow(panels,alpha=0,size=2):
     vp.plot_flow(circle, alpha=0.1)    # plot the flow
     """
     # define the grid
-    line = numpy.linspace(-size, size, 100) # computes a 1D-array
-    x, y = numpy.meshgrid(line, line)          # generates a mesh grid
+    line = numpy.linspace(-size, size, 100)  # computes a 1D-array
+    x, y = numpy.meshgrid(line, line)        # generates a mesh grid
 
     # get the velocity from the free stream and panels
-    u,v = _flow_velocity(panels,x,y,alpha)
+    u, v = _flow_velocity(panels, x, y, alpha)
 
     # plot it
     pyplot.figure(figsize=(6,5))        # set size
