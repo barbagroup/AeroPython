@@ -122,8 +122,9 @@ def sep(y,iSep):
     delta,lam,iSep = bl.march(s,u_e,nu=1e-5) # march along to the point of separation
     sSep = bl.sep(s,iSep)                    # find separation distance
     """
-    i = numpy.ceil(iSep)-1
-    return numpy.interp(iSep,[i,i+1],y[i:i+2])
+    i = numpy.ceil(iSep)          # round up to nearest integer
+    di = i-iSep                   # interpolation `distance`
+    return y[i-1]*di+y[i]*(1-di)  # linearly interpolate
 
 ### Boundary layers on vortex panels
 from VortexPanel import distance, get_array
