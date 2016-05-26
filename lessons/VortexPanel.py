@@ -124,15 +124,15 @@ def make_polygon(N,sides):
     """ Make a polygonal array of Panels
 
     Inputs:
-    N_panels -- number of panels to use
-    N_sides  -- number of sides in the polygon
+    N     -- number of panels to use
+    sides -- number of sides in the polygon
 
     Outputs:
     panels  -- an array of Panels; see help(Panel)
 
     Examples:
-    triangle = vp.make_polygon(N_panels=33,N_sides=3)  # make a triangular Panel array
-    for panel in triangle: panel.plot()                # plot the geometry
+    triangle = vp.make_polygon(N=33,sides=3)  # make a triangular Panel array
+    for panel in triangle: panel.plot()       # plot the geometry
     """
     # define the end-points
     theta = numpy.linspace(0, -2*numpy.pi, N+1)          # equally spaced theta
