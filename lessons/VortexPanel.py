@@ -52,31 +52,30 @@ class Panel(object):
         A Panel object.
 
         Examples:
-        my_panel1 = vp.Panel(-1,0,1,0)    # creates panel on x-axis with gamma=0
-        my_panel2 = vp.Panel(0,-1,0,1,4)  # creates panel on y-axis with gamma=4
+        p_1 = vp.Panel(-1,0,1,0)    # make panel on x-axis with gamma=0
+        p_2 = vp.Panel(0,-1,0,1,4)  # make panel on y-axis with gamma=4
         """
-        self.x,self.y,self.gamma = [x0,x1],[y0,y1],gamma
-        self.xc = 0.5*(x0+x1)                # x-center
-        self.yc = 0.5*(y0+y1)                # y-center
-        self.S = numpy.sqrt((x1-self.xc)**2+
-                            (y1-self.yc)**2) # half-width
-        self.sx = (x1-self.xc)/self.S        # x-tangent
-        self.sy = (y1-self.yc)/self.S        # y-tangent
+        self.x, self.y = [x0,x1], [y0,y1]            # copy end-points
+        self.gamma = gamma                           # copy gamma
+        self.xc, self.yc = 0.5*(x0+x1), 0.5*(y0+y1)  # panel center
+        dx, dy = x1-self.xc, y1-self.yc
+        self.S = numpy.linalg.norm([dx,dy])          # half-width
+        self.sx, self.sy = dx/self.S, dy/self.S      # tangent
 
     def velocity(self, x, y, gamma=None):
         """Compute the velocity induced by the panel
 
         Inputs:
-        x,y -- the x and y location where you want the velocity
-        gamma -- the panel vortex strength; defaults to Panel.gamma.
+        x,y   -- the x and y location of the desired velocity
+        gamma -- the panel vortex strength; defaults to self.gamma.
 
         Outputs:
-        u,v -- the x and y components of the velocity
+        u,v   -- the x and y components of the velocity
 
         Examples:
-        my_panel = vp.Panel(0,-1,0,1,4)        # creates panel on y-axis with gamma=4
-        u,v = my_panel.velocity(-1,0)          # finds the induced velocity on x-axis
-        u,v = my_panel.velocity(-1,0,gamma=1)  # finds the velocity using gamma=1 (not 4)
+        p_2 = vp.Panel(0,-1,0,1,4)        # make panel on y-axis with gamma=4
+        u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
+        u,v = p_2.velocity(-1,0,gamma=1)  # get velocity using gamma=1
         """
         if gamma is None: gamma = self.gamma  # default gamma
         xp,yp = self.__transform_xy(x, y)     # transform
@@ -91,8 +90,8 @@ class Panel(object):
         color -- a string naming the color; defaults to 'black'
 
         Examples:
-        my_panel = vp.Panel(0,-1,0,1)          # creates panel on y-axis
-        my_panel.plot()                        # plot the panel
+        my_panel = vp.Panel(0,-1,0,1)  # creates panel on y-axis
+        my_panel.plot()                # plot the panel
         """
         return pyplot.plot(self.x, self.y, c=color, lw=2)
 
@@ -180,8 +179,8 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     panels  -- an array of Panels; see help(Panel)
 
     Examples:
-    foil = vp.make_jukowski(N=64,dtheta=0.1) # make a cambered foil Panel array
-    for panel in foil: panel.plot()          # plot the geometry
+    foil = vp.make_jukowski(N=64)    # make a symmetric foil Panel array
+    for panel in foil: panel.plot()  # plot the geometry
     """
     # define the circle
     theta = numpy.linspace(0, -2*numpy.pi, N+1)
@@ -199,6 +198,11 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
 
 
 ### Flow solver
+
+def _check_alpha(alpha):
+    "catch iterated alpha"
+    if(isinstance(alpha, (set, list, tuple, numpy.ndarray))):
+        raise TypeError('Only accepts scalar alpha')
 
 def _construct_A_b(panels,alpha=0):
     "construct the linear system to enforce no-slip on every panel"
@@ -240,10 +244,7 @@ def solve_gamma(panels,alpha=0,kutta=[]):
     vp.solve_gamma(foil, alpha=0.1, kutta=[(0,-1)])  # solve for Panel strengths
     vp.plot_flow(foil, alpha=0.1)                    # plot the flow
     """
-    # catch iterated alpha
-    if(isinstance(alpha, (list, tuple, numpy.ndarray))):
-        raise TypeError('Only accepts scalar alpha')
-
+    _check_alpha(alpha)                   # check alpha
     A,b = _construct_A_b(panels,alpha)    # construct linear system
     for i in kutta:                       # loop through indices
         A[i[0]:i[1],i] += 1               # apply kutta condition
@@ -260,11 +261,6 @@ def solve_gamma_kutta(panels,alpha=0):
 
 def _flow_velocity(panels,x,y,alpha=0):
     "get the velocity induced by panels and unit velocity at angle `alpha`"
-
-    # the flow angle must be a scalar
-    if(isinstance(alpha, (list, tuple, numpy.ndarray))):
-        raise TypeError('Only accepts scalar alpha')
-
     # get the uniform velocity ( make it the same size & shape as x )
     u = numpy.cos(alpha)*numpy.ones_like(x)
     v = numpy.sin(alpha)*numpy.ones_like(x)
@@ -302,6 +298,7 @@ def plot_flow(panels,alpha=0,size=2):
     x, y = numpy.meshgrid(line, line)        # generates a mesh grid
 
     # get the velocity from the free stream and panels
+    _check_alpha(alpha)
     u, v = _flow_velocity(panels, x, y, alpha)
 
     # plot it
