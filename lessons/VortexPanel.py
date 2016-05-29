@@ -113,7 +113,7 @@ class Panel(object):
 ### Geometries
 
 def panelize(N,x,y):
-    "Turn x,y arrays into Panel array"
+    "Turn x,y arrays (length N+1) into an array of Panels (length N)"
     panels = numpy.empty(N, dtype=object)  # empty array of panels
     for i in range(N):                     # fill the array
         panels[i] = Panel(x[i], y[i], x[i+1], y[i+1])
@@ -241,12 +241,12 @@ def solve_gamma(panels,alpha=0,kutta=[]):
 
     Examples:
     foil = vp.make_jukowski(N=32)                    # make a Panel array
-    vp.solve_gamma(foil, alpha=0.1, kutta=[(0,-1)])  # solve for Panel strengths
+    vp.solve_gamma(foil, alpha=0.1, kutta=[(0,-1)])  # solve for gamma
     vp.plot_flow(foil, alpha=0.1)                    # plot the flow
     """
     _check_alpha(alpha)                   # check alpha
     A,b = _construct_A_b(panels,alpha)    # construct linear system
-    for i in kutta:                       # loop through indices
+    for i in kutta:                       # loop through index pairs
         A[i[0]:i[1],i] += 1               # apply kutta condition
     gamma = numpy.linalg.solve(A, b)      # solve for gamma!
     for i,p_i in enumerate(panels):
@@ -266,7 +266,7 @@ def _flow_velocity(panels,x,y,alpha=0):
     v = numpy.sin(alpha)*numpy.ones_like(x)
 
     # add the velocity contribution from each panel
-    for p in panels:
+    for p_j in panels:
         u_j, v_j = p_j.velocity(x, y)
         u, v = u+u_j, v+v_j
 
