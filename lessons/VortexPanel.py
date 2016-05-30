@@ -59,7 +59,7 @@ class Panel(object):
         self.gamma = gamma                           # copy gamma
         self.xc, self.yc = 0.5*(x0+x1), 0.5*(y0+y1)  # panel center
         dx, dy = x1-self.xc, y1-self.yc
-        self.S = numpy.linalg.norm([dx,dy])          # half-width
+        self.S = numpy.sqrt(dx**2+dy**2)             # half-width
         self.sx, self.sy = dx/self.S, dy/self.S      # tangent
 
     def velocity(self, x, y, gamma=None):
