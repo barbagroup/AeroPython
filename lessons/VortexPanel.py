@@ -83,17 +83,17 @@ class Panel(object):
         vp = _get_v(xp, yp, self.S, gamma)    # get v prime
         return self.__rotate_uv(up, vp)       # rotate back
 
-    def plot(self, color='black'):
+    def plot(self, style='k'):
         """Plot the vortex panel as a line segment
 
         Inputs:
-        color -- a string naming the color; defaults to 'black'
+        style -- a string defining the matplotlib style
 
         Examples:
         my_panel = vp.Panel(0,-1,0,1)  # creates panel on y-axis
         my_panel.plot()                # plot the panel
         """
-        return pyplot.plot(self.x, self.y, c=color, lw=2)
+        return pyplot.plot(self.x, self.y, style, lw=2)
 
     def __transform_xy(self, x, y):
         "transform from global to panel coordinates"
