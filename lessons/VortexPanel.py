@@ -30,6 +30,15 @@ def _get_v( x, y, S, gamma ):
     "y-component of induced velocity"
     return gamma/(4*numpy.pi)*(numpy.log(((x+S)**2+y**2)/((x-S)**2+y**2)))
 
+def _g_p(x, y, a, b, s):
+    return 0.5*a*numpy.log((s-x)**2+y**2)+b*numpy.arctan((s-x)/y)
+
+def _get_u_p(x, y, S, dgamma):
+    return dgamma/(4.*numpy.pi*S)*(_g_p(x,y,-y,-x,S)-_g_p(x,y,-y,-x,-S))
+
+def _get_v_p(x, y, S, dgamma):
+    return dgamma/(4.*numpy.pi*S)*(_g_p(x,y,-x,y,S)-_g_p(x,y,-x,y,-S)-2*S)
+
 class Panel(object):
     """Constant strength vortex panel class
 
@@ -56,7 +65,7 @@ class Panel(object):
         p_2 = vp.Panel(0,-1,0,1,4)  # make panel on y-axis with gamma=4
         """
         self.x, self.y = [x0,x1], [y0,y1]            # copy end-points
-        self.gamma = gamma                           # copy gamma
+        self.gamma, self._gamma = gamma, (gamma,gamma) # copy gamma
         self.xc, self.yc = 0.5*(x0+x1), 0.5*(y0+y1)  # panel center
         dx, dy = x1-self.xc, y1-self.yc
         self.S = numpy.sqrt(dx**2+dy**2)             # half-width
@@ -75,12 +84,13 @@ class Panel(object):
         Examples:
         p_2 = vp.Panel(0,-1,0,1,4)        # make panel on y-axis with gamma=4
         u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
-        u,v = p_2.velocity(-1,0,gamma=1)  # get velocity using gamma=1
+        u,v = p_2.velocity(-1,0,gamma=(1,1))  # get velocity using gamma=1
         """
-        if gamma is None: gamma = self.gamma  # default gamma
+        if gamma is None: gamma = self._gamma  # default gamma
         xp,yp = self.__transform_xy(x, y)     # transform
-        up = _get_u(xp, yp, self.S, gamma)    # get u prime
-        vp = _get_v(xp, yp, self.S, gamma)    # get v prime
+        gc, dg = 0.5*(gamma[0]+gamma[1]), gamma[1]-gamma[0]
+        up = _get_u(xp, yp, self.S, gc)+_get_u_p( xp, yp, self.S, dg)
+        vp = _get_v(xp, yp, self.S, gc)+_get_v_p( xp, yp, self.S, dg)
         return self.__rotate_uv(up, vp)       # rotate back
 
     def plot(self, style='k'):
@@ -213,7 +223,7 @@ def _construct_A_b(panels,alpha=0):
     # construct the matrix
     A = numpy.empty((len(xc), len(xc)))      # empty matrix
     for j, p_j in enumerate(panels):         # loop over panels
-        u,v = p_j.velocity(xc,yc,gamma=1)      # f_j at all panel centers
+        u,v = p_j.velocity(xc,yc,gamma=(1,1))  # f_j at all panel centers
         A[:,j] = u*sx+v*sy                     # tangential component
     numpy.fill_diagonal(A, 0.5)              # fill diagonal with 1/2
 
@@ -250,11 +260,41 @@ def solve_gamma(panels,alpha=0,kutta=[]):
         A[i[0]:i[1],i] += 1               # apply kutta condition
     gamma = numpy.linalg.solve(A, b)      # solve for gamma!
     for i,p_i in enumerate(panels):
-        p_i.gamma = gamma[i]              # update panels
+        p_i.gamma = gamma[i]                 # update center gamma
+        p_i._gamma = (gamma[i],gamma[i])     # update end-point gammas
 
 def solve_gamma_kutta(panels,alpha=0):
     "special case of solve_gamma with kutta=[(0,-1)]"
     return solve_gamma(panels,alpha,kutta=[(0,-1)])
+
+def _construct_A_b_O2(panels,alpha=0):
+    "construct the linear system to enforce no-pen on every panel"
+
+    # get arrays
+    xc,yc,sx,sy = get_array(panels,'xc','yc','sx','sy')
+
+    # construct the matrix
+    A = numpy.zeros((len(xc), len(xc)))      # empty matrix
+    for j, p_j in enumerate(panels):         # loop over panels
+        u,v = p_j.velocity(xc,yc,gamma=(0,1))   # f_j(S) at all panel centers
+        A[:,j] += -u*sy+v*sx                    # normal component
+        u,v = p_j.velocity(xc,yc,gamma=(1,0))   # f_j(-S) at all panel centers
+        A[:,j-1] += -u*sy+v*sx                  # normal component
+
+    # construct the RHS
+    b = numpy.cos(alpha)*sy-numpy.sin(alpha)*sx
+    return A, b
+
+def solve_gamma_O2(panels,alpha=0,kutta=[(0,-1)]):
+    "special case of solve_gamma for linearly varying panels"
+    _check_alpha(alpha)                      # check alpha
+    A,b = _construct_A_b_O2(panels,alpha)    # construct linear system
+    for j,i in kutta:                        # apply kutta
+        A[i,:] = 0; A[i,i] = 1; b[i] = 0
+    gamma = numpy.linalg.solve(A, b)         # solve for gamma!
+    for i,p_i in enumerate(panels):
+        p_i._gamma = (gamma[i-1],gamma[i])     # update end-point gammas
+        p_i.gamma = 0.5*(gamma[i-1]+gamma[i])  # update center gamma
 
 
 ### Visualize
@@ -272,7 +312,7 @@ def _flow_velocity(panels,x,y,alpha=0):
 
     return u, v
 
-def plot_flow(panels,alpha=0,size=2):
+def plot_flow(panels,alpha=0,size=2,vmax=None):
     """ Plot the flow induced by a Panel array and the background flow
 
     Notes:
@@ -281,9 +321,10 @@ def plot_flow(panels,alpha=0,size=2):
       the wrong flow will be displayed. See example below.
 
     Inputs:
-    panels  -- an array of Panel objects
-    alpha   -- angle of attack relative to x-axis; must be a scalar
-    size    -- size of the domain; corners are at (-size,-size) and (size,size)
+    panels -- an array of Panel objects
+    alpha  -- angle of attack relative to x-axis; must be a scalar
+    size   -- size of the domain; corners are at (-size,-size) and (size,size)
+    vmax   -- maximum contour level; defaults to the field max
 
     Outputs:
     pyplot of the flow vectors, velocity magnitude contours, and the panels.
@@ -308,7 +349,7 @@ def plot_flow(panels,alpha=0,size=2):
 
     # plot contours
     m = numpy.sqrt(u**2+v**2)
-    velocity = pyplot.contourf(x, y, m, vmin=0)
+    velocity = pyplot.contourf(x, y, m, vmin=0, vmax=vmax)
     cbar = pyplot.colorbar(velocity)
     cbar.set_label('Velocity magnitude', fontsize=14);
 
