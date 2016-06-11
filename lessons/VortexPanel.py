@@ -30,15 +30,6 @@ def _get_v( x, y, S, gamma ):
     "y-component of induced velocity"
     return gamma/(4*numpy.pi)*(numpy.log(((x+S)**2+y**2)/((x-S)**2+y**2)))
 
-def _g_p(x, y, a, b, s):
-    return 0.5*a*numpy.log((s-x)**2+y**2)+b*numpy.arctan((s-x)/y)
-
-def _get_u_p(x, y, S, dgamma):
-    return dgamma/(4.*numpy.pi*S)*(_g_p(x,y,-y,-x,S)-_g_p(x,y,-y,-x,-S))
-
-def _get_v_p(x, y, S, dgamma):
-    return dgamma/(4.*numpy.pi*S)*(_g_p(x,y,-x,y,S)-_g_p(x,y,-x,y,-S)-2*S)
-
 class Panel(object):
     """Constant strength vortex panel class
 
@@ -87,10 +78,12 @@ class Panel(object):
         u,v = p_2.velocity(-1,0,gamma=(1,1))  # get velocity using gamma=1
         """
         if gamma is None: gamma = self._gamma  # default gamma
-        xp,yp = self.__transform_xy(x, y)     # transform
-        gc, dg = 0.5*(gamma[0]+gamma[1]), gamma[1]-gamma[0]
-        up = _get_u(xp, yp, self.S, gc)+_get_u_p( xp, yp, self.S, dg)
-        vp = _get_v(xp, yp, self.S, gc)+_get_v_p( xp, yp, self.S, dg)
+        gammac = 0.5*(sum(gamma))
+        xp,yp = self.__transform_xy(x, y)      # transform
+        up = _get_u(xp, yp, self.S, gammac)    # get u
+        vp = _get_v(xp, yp, self.S, gammac)    # get v
+        if gamma[1]-gamma[0]:                  # O(2)
+            self.__O2(up,vp,xp,yp,gamma[1]-gamma[0])
         return self.__rotate_uv(up, vp)       # rotate back
 
     def plot(self, style='k'):
@@ -112,6 +105,15 @@ class Panel(object):
         xp = xt*self.sx+yt*self.sy   # rotate x
         yp = yt*self.sx-xt*self.sy   # rotate y
         return xp, yp
+
+    def __O2(self, u, v, x, y, dgamma):
+        "second order velocity contribution"
+        c = dgamma/(4.*numpy.pi*self.S)
+        def _g_p(x, y, a, b, s):
+            return 0.5*a*numpy.log((s-x)**2+y**2)+b*numpy.arctan((s-x)/y)
+        u += c*(_g_p(x,y,-y,-x,self.S)-_g_p(x,y,-y,-x,-self.S))
+        v += c*(_g_p(x,y,-x,y,self.S)-_g_p(x,y,-x,y,-self.S)-2*self.S)
+        return u,v
 
     def __rotate_uv(self, up, vp):
         "rotate velocity back to global coordinates"
