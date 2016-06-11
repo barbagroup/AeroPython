@@ -109,10 +109,10 @@ class Panel(object):
     def __O2(self, u, v, x, y, dgamma):
         "second order velocity contribution"
         c = dgamma/(4.*numpy.pi*self.S)
-        def _g_p(x, y, a, b, s):
+        def f(a, b, s):
             return 0.5*a*numpy.log((s-x)**2+y**2)+b*numpy.arctan((s-x)/y)
-        u += c*(_g_p(x,y,-y,-x,self.S)-_g_p(x,y,-y,-x,-self.S))
-        v += c*(_g_p(x,y,-x,y,self.S)-_g_p(x,y,-x,y,-self.S)-2*self.S)
+        u += c*(f(-y,-x,self.S)-f(-y,-x,-self.S))
+        v += c*(f(-x,y,self.S)-f(-x,y,-self.S)-2*self.S)
         return u,v
 
     def __rotate_uv(self, up, vp):
