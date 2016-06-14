@@ -81,7 +81,7 @@ def march(x,u_e,nu):
     # set initial condition on delta
     if du_e[0]>0:
         delta[0] = numpy.sqrt(lam0*nu/du_e[0])
-    elif x[0]>0 and u_e[0]>0: # use flat plate soln.
+    elif x[0]>0 and u_e[0]>0 and du_e[0]==0: # use flat plate soln.
         lam[0] = 0
         delta[0] = 5.836*numpy.sqrt(nu*x[0]/u_e[0])
     else:
@@ -144,14 +144,10 @@ def split(panels):
     vp.solve_gamma_kutta(foil,alpha=0.1)   #2. Solve for the potential flow
     foil_top,foil_bot = bl.split(foil)     #3. Split the boundary layers
     """
-    gamma = get_array(panels,'gamma')
-    back = numpy.where(numpy.logical_and(
-            gamma>=0,numpy.roll(gamma,1)<=0))  # find rear stagnation point
-    rolled = numpy.roll(panels,-back[0])       # make this index 0
-    top = [p for p in rolled if p.gamma<=0]    # panels where flow aligns with s
-    bottom = [p for p in rolled if p.gamma>=0] # panels where flow is against s
-    bottom = bottom[::-1]                      # reverse indices to align bottom
-    return top,bottom
+    u_s = -get_array(panels,'gamma')         # tangential velocity
+    top,bot = panels[u_s>=0],panels[u_s<=0]  # split based on flow direction
+    bot = bot[::-1]                          # flip to run front to back
+    return top,bot
 
 def panel_march(panels,nu):
     """ March along a set of BL panels
