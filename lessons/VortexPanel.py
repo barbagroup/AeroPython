@@ -9,7 +9,7 @@ Class:
 Methods:
     panelize
     make_polygon, make_ellipse, make_circle, make_jukowski
-    solve_gamma, solve_gamma_kutta
+    solve_gamma, solve_gamma_kutta, solve_gamma_O2
     plot_flow
     get_array
     distance
