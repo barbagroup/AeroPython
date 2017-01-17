@@ -368,7 +368,7 @@ def get_array(panels,key,*args):
     """ Generate numpy arrays of panel attributes
 
     Notes:
-    Use help(panel) to see available attributes
+    Use help(Panel) to see available attributes
 
     Inputs:
     panels       -- an array of Panel objects
