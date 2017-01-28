@@ -16,11 +16,11 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 1. [Lifting bodies](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_3_LiftingBodies.ipynb)
 1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_4_BoundaryLayerSolver.ipynb)
 1. [Separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_5_SeparationPrediction.ipynb)
-1. [Pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_6_PressureDrag.ipynb)
+1. [Linear panels and pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_6_PressureDrag.ipynb)
 
 #### Assignment
-* [**Overview**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
-  1. [**Geometry 1**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_1.ipynb)
-  1. [**Geometry 2**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_2.ipynb)
-  1. [**Geometry 3**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_3.ipynb)
-  1. [**Geometry 4**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_4.ipynb)
+* [Overview](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
+  1. [Geometry 1](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_1.ipynb)
+  1. [Geometry 2](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_2.ipynb)
+  1. [Geometry 3](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_3.ipynb)
+  1. [Geometry 4](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_4.ipynb)
