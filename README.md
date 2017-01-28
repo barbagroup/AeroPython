@@ -7,23 +7,20 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 
 ### List of notebooks:
 
+#### Introduction
 * [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/0_0_QuickPythonIntro.ipynb)
 
-####Part 1. Viscous flows
-
-1. [Turbulent boundary layers](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_3_TurbulentBoundaryLayer.ipynb)
-1. [Pohlhausen profile](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/2_4_Pohlhausen.ipynb)
-
-####Part 2. Potential flow
-1. Complex variables
-2. Conformal mappings
-
-####Part 3. Numerical methods
-
+#### Numerical methods
 1. [Vortex sheets](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_1_VortexSheet.ipynb)
 1. [Vortex panel method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_2_VortexPanelMethod.ipynb)
 1. [Lifting bodies](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_3_LiftingBodies.ipynb)
 1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_4_BoundaryLayerSolver.ipynb)
 1. [Separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_5_SeparationPrediction.ipynb)
 1. [Pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_6_PressureDrag.ipynb)
-1. [**Assignment**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
+
+#### Assignment
+* [**Overview**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
+  1. [**Geometry 1**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_1.ipynb)
+  1. [**Geometry 2**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_2.ipynb)
+  1. [**Geometry 3**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_3.ipynb)
+  1. [**Geometry 4**](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_4.ipynb)
