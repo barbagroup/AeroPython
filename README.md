@@ -20,7 +20,7 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 
 #### Assignment
 * [Overview](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
-  1. [Geometry 1](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_1.ipynb)
-  1. [Geometry 2](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_2.ipynb)
-  1. [Geometry 3](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_3.ipynb)
-  1. [Geometry 4](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/geom_4.ipynb)
+  1. [Geometry 1](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_1.ipynb)
+  1. [Geometry 2](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_2.ipynb)
+  1. [Geometry 3](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_3.ipynb)
+  1. [Geometry 4](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_4.ipynb)
