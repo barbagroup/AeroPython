@@ -5,7 +5,13 @@ These IPython notebooks contain content for the *Marine Hydrodynamics* course at
 
 Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) was inspired by [AeroPython](https://github.com/barbagroup/AeroPython) developed by [Lorena Barba](http://lorenabarba.com/). The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
-### List of notebooks:
+--- 
+### Notebooks
+
+__Click this link to launch the interactive notebooks:__
+[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/weymouth/marinehydro)
+
+__Or choose from the static rendered notebooks below:__
 
 #### Introduction
 * [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/0_0_QuickPythonIntro.ipynb)
