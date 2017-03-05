@@ -345,9 +345,9 @@ def plot_flow(panels,alpha=0,size=2,vmax=None):
     u, v = _flow_velocity(panels, x, y, alpha)
 
     # plot it
-    pyplot.figure(figsize=(6,5))        # set size
-    pyplot.xlabel('x', fontsize=14)     # label x
-    pyplot.ylabel('y', fontsize=14)     # label y
+    pyplot.figure(figsize=(9,7))                # set size
+    pyplot.xlabel('x', fontsize=14)             # label x
+    pyplot.ylabel('y', fontsize=14, rotation=0) # label y
 
     # plot contours
     m = numpy.sqrt(u**2+v**2)
