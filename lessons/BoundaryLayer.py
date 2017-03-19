@@ -8,7 +8,7 @@ Methods:
     march
     split
     panel_march
-    predict_separation_point
+    panel_sep_point
 
 Imports: numpy, bisect from scipy.optimize, VortexPanel
 """
@@ -73,7 +73,7 @@ def march(x,u_e,nu):
     delta,lam,iSep = march(s,u_e,nu=1e-5)    # march along to the point of separation
     """
     dx = numpy.diff(x)
-    du_e = numpy.gradient(u_e,numpy.gradient(x))
+    du_e = numpy.gradient(u_e)/numpy.gradient(x)               # central difference
     du_e[0] = (3.*u_e[0]-4.*u_e[1]+u_e[2])/(2.*(x[0]-x[1]))    # correct initial value
     delta = numpy.full_like(x,0.)
     lam = numpy.full_like(x,lam0)
