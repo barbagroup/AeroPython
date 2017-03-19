@@ -29,8 +29,8 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 1. [Linear panels and pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_6_PressureDrag.ipynb)
 
 #### Assignment
-* [Overview](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/Assignment.ipynb)
-  1. [Geometry 1](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_1.ipynb)
-  1. [Geometry 2](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_2.ipynb)
-  1. [Geometry 3](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_3.ipynb)
-  1. [Geometry 4](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/geoms/Geom_4.ipynb)
+* [Overview](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Assignment.ipynb)
+  1. [Geometry 1](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Geom_1.ipynb)
+  1. [Geometry 2](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Geom_2.ipynb)
+  1. [Geometry 3](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Geom_3.ipynb)
+  1. [Geometry 4](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Geom_4.ipynb)
