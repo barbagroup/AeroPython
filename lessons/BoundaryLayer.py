@@ -127,27 +127,28 @@ def sep(y,iSep):
     return y[i-1]*di+y[i]*(1-di)  # linearly interpolate
 
 ### Boundary layers on vortex panels
-from VortexPanel import distance, get_array
+from VortexPanel import PanelArray
 
-def split(panels):
-    """ Split panels into two boundary layer sections
+def split(body):
+    """Split PanelArray into two boundary layer sections
 
     Inputs:
-    panels  -- array of Panels which have be 'solved'
+    body  -- PanelArray which has be 'solved'
 
     Outputs:
-    top     -- array of Panels defining the top BL
-    bottom  -- array of Panels defining the bottom BL
+    top     -- PanelArray defining the top BL
+    bottom  -- PanelArray defining the bottom BL
 
     Examples:
-    foil = vp.make_jukowski(N=64)          #1. Define the geometry
-    vp.solve_gamma_kutta(foil,alpha=0.1)   #2. Solve for the potential flow
-    foil_top,foil_bot = bl.split(foil)     #3. Split the boundary layers
+    foil = vp.make_jukowski(N=64)        #1. Define the geometry
+    foil.solve_gamma_kutta(alpha=0.1)    #2. Solve for the potential flow
+    foil_top,foil_bot = split(foil)      #3. Split the boundary layers
     """
-    u_s = -get_array(panels,'gamma')         # tangential velocity
-    top,bot = panels[u_s>=0],panels[u_s<=0]  # split based on flow direction
-    bot = bot[::-1]                          # flip to run front to back
-    return top,bot
+    u_s = -body.get_array('gamma')          # tangential velocity
+    top = body.panels[u_s>=0]               # split based on flow direction
+    bot = body.panels[u_s<=0]
+    bot = bot[::-1]                         # flip to run front to back
+    return PanelArray(panels=top),PanelArray(panels=bot)
 
 def panel_march(panels,nu):
     """ March along a set of BL panels
@@ -163,12 +164,12 @@ def panel_march(panels,nu):
     Examples:
     nu = 1e-5
     circle = vp.make_circle(N=64)           #1. make the geometry
-    vp.solve_gamma(circle)                  #2. solve the pflow
+    circle.solve_gamma()                    #2. solve the pflow
     top,bottom = bl.split(circle)           #3. split the panels
     delta,lam,iSep = bl.panel_march(top,nu) #4. march along the BL
     """
-    s = distance(panels)                    # distance
-    u_e = abs(get_array(panels,'gamma'))    # velocity
+    s = panels.distance()                   # distance
+    u_e = abs(panels.get_array('gamma'))    # velocity
     return march(s,u_e,nu)                  # march
 
 def panel_sep_point(panels):
@@ -182,10 +183,10 @@ def panel_sep_point(panels):
 
     Examples:
     foil = vp.make_jukowski(N=64)         #1. make the geometry
-    vp.solve_gamma_kutta(foil,alpha=0.1)  #2. solve the pflow
+    foil.solve_gamma_kutta(alpha=0.1)     #2. solve the pflow
     top,bottom = bl.split(foil)           #3. split the panels
     x_top,y_top = bl.panel_sep_point(top) #4. find separation point
     """
     delta,lam,iSep = panel_march(panels,nu=1e-5)
-    x,y = get_array(panels,'xc','yc')
+    x,y = panels.get_array('xc','yc')
     return sep(x,iSep),sep(y,iSep)
