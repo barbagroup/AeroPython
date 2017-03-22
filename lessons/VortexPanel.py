@@ -307,7 +307,6 @@ class PanelArray(object):
         Use help(Panel) to see available attributes
 
         Inputs:
-        panels       -- an array of Panel objects
         key (,*args) -- one or more names of the desired attributes
 
         Outputs:
@@ -323,15 +322,11 @@ class PanelArray(object):
             return [self.get_array(k) for k in (key,)+args]
 
     def distance(self):
-        """ Find the cumulative distance of the path along a set of panels
+        """ Find the cumulative distance of along the PanelArray
 
-        Inputs:
-        panels  -- array of Panels
-
-        Outputs:
-        s       -- array of distances from the edge of the first
-                   panel to the center of each panel
-
+        Notes:
+        s[0] = S[0], s[1] = 2*S[0]+S[1], s[2] = 2*S[0]+2*S[1]+S[2], ...
+        
         Examples:
         foil = vp.make_jukowski(N=64)       # define the geometry
         s = foil.distance()                 # get the panel path distance
