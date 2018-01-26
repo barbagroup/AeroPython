@@ -38,7 +38,7 @@ def march(s,u_s,nu):
     nu  -- kinematic viscosity; must be scalar
 
     Outputs:
-    delta2 -- momentum layer thickness array
+    delta2 -- momentum thickness array
     lam   -- shape parameter array
     iSep  -- separation point in terms of the array indices
 
