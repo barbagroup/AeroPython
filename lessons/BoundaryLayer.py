@@ -14,7 +14,7 @@ Imports: numpy, bisect from scipy.optimize, VortexPanel
 """
 
 import numpy
-from scipy.optimize import bisect
+from scipy.optimize import fsolve
 
 # displacement thickness ratios
 def disp_ratio(lam): return 3./10.-lam/120.
@@ -25,32 +25,7 @@ def mom_ratio(lam): return 37./315.-lam/945.-lam**2/9072.
 # wall derivative
 def df_0(lam): return 2+lam/6.
 
-# momentum function
-def _g_1(lam): return df_0(lam)-lam*(disp_ratio(lam)+2*mom_ratio(lam))
-
-# use bisect method to find lambda0
-lam0 = bisect(_g_1,-12,12)
-
-# boundary layer thickness derivative
-def _ddx_delta(Re_d,lam):
-    if Re_d==0: return 0                # stagnation point condition
-    return _g_1(lam)/mom_ratio(lam)/Re_d
-
-# Heun's method for ODE integration
-def _heun(g,psi_i,i,dx,*args):
-    g_i = g(psi_i,i,*args)              # integrand at i
-    tilde_psi = psi_i+g_i*dx            # predicted estimate at i+1
-    g_i_1 = g(tilde_psi,i+1,*args)      # integrand at i+1
-    return psi_i+0.5*(g_i+g_i_1)*dx     # corrected estimate
-
-# boundary layer ODE integrand function
-def _g_pohl(delta_i,i,u_e,du_e,nu):
-    Re_d = delta_i*u_e[i]/nu            # definition of Re_delta
-    lam = delta_i**2*du_e[i]/nu         # definition of lambda
-    lam = min(12,max(-12,lam))          # enforce bounds on lambda
-    return _ddx_delta(Re_d,lam)          # compute derivative
-
-def march(x,u_e,nu):
+def march(s,u_s,nu):
     """ March along the boundary layer from stagnation to separation
 
     Notes:
@@ -58,42 +33,43 @@ def march(x,u_e,nu):
     are meaningless.
 
     Inputs:
-    x   -- array of distances along the boundary layer; must be positive and increasing
-    u_e -- array of external velocities at locations `x`
+    s   -- array of distances along the boundary layer; must be positive and increasing
+    u_s -- array of external velocities at locations `x`
     nu  -- kinematic viscosity; must be scalar
 
     Outputs:
-    delta -- array boundary layer thicknesses at locations `x`
-    lam   -- array of shape function values at locations `x`
-    iSep  -- array index of separation point
+    delta2 -- momentum layer thickness array
+    lam   -- shape parameter array
+    iSep  -- separation point in terms of the array indices
 
     Examples:
     s = numpy.linspace(0,numpy.pi,16)        # define distance array
-    u_e = numpy.sin(s)                       # define external velocity (circle example)
-    delta,lam,iSep = march(s,u_e,nu=1e-5)    # march along to the point of separation
+    u_s = numpy.sin(s)                       # define external velocity (circle example)
+    delta2,lam,iSep = march(s,u_s,nu=1e-5)    # march along to the point of separation
     """
-    dx = numpy.diff(x)
-    du_e = numpy.gradient(u_e)/numpy.gradient(x)               # central difference
-    du_e[0] = (3.*u_e[0]-4.*u_e[1]+u_e[2])/(2.*(x[0]-x[1]))    # correct initial value
-    delta = numpy.full_like(x,0.)
-    lam = numpy.full_like(x,lam0)
+    # define functions for delta_2^2 and Delta delta_2^2
+    def d22(lam,i):
+        return lam*mom_ratio(lam)**2/du_s[i]*nu
+    def dd22(lam_i_1,i):
+        return nu*(g(lam[i])/u_s[i]+g(lam_i_1)/u_s[i+1])*(s[i+1]-s[i])
+    def g(lam):
+        F = mom_ratio(lam)
+        return F*(df_0(lam)-lam*(disp_ratio(lam)+2.*F))
 
-    # set initial condition on delta
-    if du_e[0]>0:
-        delta[0] = numpy.sqrt(lam0*nu/du_e[0])
-    elif x[0]>0 and u_e[0]>0 and du_e[0]==0: # use flat plate soln.
-        lam[0] = 0
-        delta[0] = 5.836*numpy.sqrt(nu*x[0]/u_e[0])
-    else:
-        raise ValueError('bad u_e near x=0')
+    # set up arrays with ICs
+    du_s = numpy.gradient(u_s)/numpy.gradient(s)
+    lam,delta22 = numpy.zeros_like(s),numpy.zeros_like(s)
+    if du_s[0]>0: lam[0] = fsolve(g,7)[0]; delta22[0] = d22(lam[0],0)
+    else: delta22[0] = 2.*nu*g(0)/u_s[0]*s[0]
 
-    # march!
-    for i in range(len(x)-1):
-        delta[i+1] = _heun(_g_pohl,delta[i],i,dx[i],
-                          u_e,du_e,nu)  # ...additional arguments
-        lam[i+1] = delta[i+1]**2*du_e[i+1]/nu
-
-        if lam[i+1] < -12: break        # separation condition
+    # integrate
+    for i in range(len(s)-1):
+        if du_s[i+1]==0: lam[i+1] = 0
+        else:
+            def f(lam): return d22(lam,i+1)-delta22[i]-dd22(lam,i)
+            lam[i+1] = fsolve(f,lam[i])[0]
+        delta22[i+1] = delta22[i]+dd22(lam[i+1],i)
+        if lam[i+1]<-12 : break
 
     # find separation index
     if(lam[i+1]>-12):
@@ -101,7 +77,36 @@ def march(x,u_e,nu):
     else:
         iSep = numpy.interp(12,-lam[i:i+2],[i,i+1])
 
-    return delta,lam,iSep               # return with separation index
+    return numpy.sqrt(delta22),lam,iSep
+
+def thwaites(s,u_s,nu):
+    """ Boundary layer integrator using Thwaites approximate method
+    Same inputs and outputs as bl.march
+    """
+    # integrate for delta_2^2
+    from scipy.integrate import cumtrapz
+    delta22 = 0.45*nu/u_s**6*cumtrapz(u_s**5,s,initial=0)
+
+    # check IC
+    du_s = numpy.gradient(u_s)/numpy.gradient(s)
+    if du_s[0]==0: delta22 += 0.44*nu/u_s[0]*s[0]
+
+    # find separation point
+    lam_2 = delta22*du_s/nu; lim = -12*mom_ratio(-12)**2
+    i = numpy.count_nonzero(lam_2>lim)
+    if i==len(s):
+        iSep = i-1
+    else:
+        iSep = numpy.interp(-lim,-lam_2[i-1:i+1],[i-1,i])
+
+    # invert for lambda
+    def invert(lam_2):
+        if lam_2<lim: return 0
+        def f(lam): return lam_2-mom_ratio(lam)**2*lam
+        return fsolve(f,0)[0]
+    lam = numpy.array([invert(lam2) for lam2 in lam_2])
+
+    return numpy.sqrt(delta22),lam,iSep
 
 def sep(y,iSep):
     """ Interpolate value from array at the separation point
