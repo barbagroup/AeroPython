@@ -75,12 +75,12 @@ class Panel(object):
         """
         if gamma is None: gamma = self._gamma  # default gamma
         gammac = 0.5*(sum(gamma))
-        xp,yp = self.__transform_xy(x, y)      # transform
+        xp,yp = self._transform_xy(x, y)      # transform
         up = _get_u(xp, yp, self.S, gammac)    # get u
         vp = _get_v(xp, yp, self.S, gammac)    # get v
         if gamma[1]-gamma[0]:                  # O(2)
-            self.__O2(up,vp,xp,yp,gamma[1]-gamma[0])
-        return self.__rotate_uv(up, vp)       # rotate back
+            self._O2(up,vp,xp,yp,gamma[1]-gamma[0])
+        return self._rotate_uv(up, vp)       # rotate back
 
     def plot(self, style='k'):
         """Plot the vortex panel as a line segment
@@ -94,7 +94,7 @@ class Panel(object):
         """
         return pyplot.plot(self.x, self.y, style, lw=2)
 
-    def __transform_xy(self, x, y):
+    def _transform_xy(self, x, y):
         "transform from global to panel coordinates"
         xt = x-self.xc               # shift x
         yt = y-self.yc               # shift y
@@ -102,7 +102,7 @@ class Panel(object):
         yp = yt*self.sx-xt*self.sy   # rotate y
         return xp, yp
 
-    def __O2(self, u, v, x, y, dgamma):
+    def _O2(self, u, v, x, y, dgamma):
         "second order velocity contribution"
         c = dgamma/(4.*numpy.pi*self.S)
         def f(a, b, s):
@@ -111,7 +111,7 @@ class Panel(object):
         v += c*(f(-x,y,self.S)-f(-x,y,-self.S)-2*self.S)
         return u,v
 
-    def __rotate_uv(self, up, vp):
+    def _rotate_uv(self, up, vp):
         "rotate velocity back to global coordinates"
         u = up*self.sx-vp*self.sy    # reverse rotate u prime
         v = vp*self.sx+up*self.sy    # reverse rotate v prime
@@ -197,13 +197,15 @@ class PanelArray(object):
 
         # get arrays
         xc,yc,sx,sy = self.get_array('xc','yc','sx','sy')
-
-        # construct the matrix
-        A = numpy.empty((len(xc), len(xc)))      # empty matrix
-        for j, p_j in enumerate(self.panels):    # loop over panels
-            u,v = p_j.velocity(xc,yc,gamma=(1,1))  # f_j at all panel centers
-            A[:,j] = u*sx+v*sy                     # tangential component
-        numpy.fill_diagonal(A, 0.5)              # fill diagonal with 1/2
+        
+        # influence of panel p_j on the other panels
+        def f_j(p_j): 
+            u,v = p_j.velocity(xc,yc,gamma=(1,1))  # use gamma=1 to get f
+            return u*sx+v*sy                       # tangent projection
+        
+        # make matrix
+        A = numpy.stack([f_j(p_j) for p_j in self.panels],axis=-1) # loop over panels
+        numpy.fill_diagonal(A, 0.5)                                # fill diagonal with 1/2
 
         # construct the RHS
         b = -numpy.cos(self.alpha)*sx-numpy.sin(self.alpha)*sy
