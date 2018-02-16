@@ -64,7 +64,8 @@ div.text_cell_render{
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     display: block;
-}	
+}
+
 .text_cell_render h2 {
     font-family: 'Fenix', serif;
     font-size: 22pt;
@@ -72,12 +73,12 @@ div.text_cell_render{
     margin-bottom: 0.1em;
     margin-top: 0.3em;
     display: block;
-}	
+}
 
 .text_cell_render h3 {
     font-family: 'Fenix', serif;
     margin-top:12px;
-	font-size: 16pt;
+    font-size: 16pt;
     margin-bottom: 3px;
     font-style: regular;
 }
@@ -112,32 +113,34 @@ div.text_cell_render{
     margin-top: 1px;
 }
 
-    .CodeMirror{
-            font-family: "Source Code Pro";
-			font-size: 90%;
+.CodeMirror{
+        font-family: "Source Code Pro";
+        font-size: 90%;
+}
+
+.warning{
+    color: rgb( 240, 20, 20 )
     }
-/*    .prompt{
-        display: None;
-    }*/
-	
-    
-    .warning{
-        color: rgb( 240, 20, 20 )
-        }  
 </style>
+
 <script>
     MathJax.Hub.Config({
                         TeX: {
                            extensions: ["AMSmath.js"], 
                            equationNumbers: { autoNumber: "AMS", useLabelIds: true}
                            },
-                tex2jax: {
-                    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                    displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-                },
-                displayAlign: 'center', // Change this to 'center' to center equations.
-                "HTML-CSS": {
-                    styles: {'.MathJax_Display': {"margin": 4}}
-                }
-        });
+                        tex2jax: {
+                            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+                            },
+                        displayAlign: 'center', // Change this to 'center' to center equations.
+                        "HTML-CSS": {
+                            styles: {'.MathJax_Display': {"margin": 4}}
+                            }
+                        });
+    MathJax.Hub.Queue(
+                      ["resetEquationNumbers", MathJax.InputJax.TeX],
+                      ["PreProcess", MathJax.Hub],
+                      ["Reprocess", MathJax.Hub]
+                     );
 </script>
