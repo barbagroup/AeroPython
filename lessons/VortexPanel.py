@@ -44,7 +44,7 @@ class Panel(object):
         p_2 = vp.Panel(0,-1,0,1,4)  # make panel on y-axis with gamma=4
         """
         self.x = (x0,x1); self.y = (y0,y1)              # copy end-points
-        self.gamma = gamma #; self._gamma = (gamma,gamma) # copy gamma
+        self.gamma = gamma; self._gamma = (gamma,gamma) # copy gamma
         self.xc = 0.5*(x0+x1); self.yc = 0.5*(y0+y1)    # panel center
         dx = x1-self.xc; dy = y1-self.yc
         self.S = numpy.sqrt(dx**2+dy**2)                # half-width
@@ -63,12 +63,13 @@ class Panel(object):
         p_2 = vp.Panel(0,-1,0,1,4)        # make panel on y-axis with gamma=4
         u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
         """
-        if gamma[1]-gamma[0]: # O(2)
+        if self._gamma[1]-self._gamma[0]: # non-constant gamma
             u0,v0,u1,v1 = self._linear(x,y)
-            return gamma[0]*u0+gamma[1]*u1,gamma[0]*v0+gamma[1]*v1
-        else:                  # O(1)
-            u,v = self._constant(x,y)
-            return gamma[0]*u,gamma[0]*v
+            return (self._gamma[0]*u0+self._gamma[1]*u1,
+                    self._gamma[0]*v0+self._gamma[1]*v1)
+        else:
+            u,v = self._constant(x,y)     # constant gamma
+            return self._gamma[0]*u,self._gamma[0]*v
 
     def plot(self, style='k'):
         """Plot the vortex panel as a line segment
