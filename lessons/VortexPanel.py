@@ -18,14 +18,6 @@ from matplotlib import pyplot
 numpy.seterr(divide='ignore')
 ### Fundamentals
 
-def _get_u( x, y, S, gamma ):
-    "x-component of induced velocity"
-    return gamma/(2*numpy.pi)*(numpy.arctan((x-S)/y)-numpy.arctan((x+S)/y))
-
-def _get_v( x, y, S, gamma ):
-    "y-component of induced velocity"
-    return gamma/(4*numpy.pi)*(numpy.log(((x+S)**2+y**2)/((x-S)**2+y**2)))
-
 class Panel(object):
     """Vortex panel class
 
@@ -51,19 +43,18 @@ class Panel(object):
         p_1 = vp.Panel(-1,0,1,0)    # make panel on x-axis with gamma=0
         p_2 = vp.Panel(0,-1,0,1,4)  # make panel on y-axis with gamma=4
         """
-        self.x, self.y = [x0,x1], [y0,y1]            # copy end-points
-        self.gamma, self._gamma = gamma, (gamma,gamma) # copy gamma
-        self.xc, self.yc = 0.5*(x0+x1), 0.5*(y0+y1)  # panel center
-        dx, dy = x1-self.xc, y1-self.yc
-        self.S = numpy.sqrt(dx**2+dy**2)             # half-width
-        self.sx, self.sy = dx/self.S, dy/self.S      # tangent
+        self.x = (x0,x1); self.y = (y0,y1)              # copy end-points
+        self.gamma = gamma #; self._gamma = (gamma,gamma) # copy gamma
+        self.xc = 0.5*(x0+x1); self.yc = 0.5*(y0+y1)    # panel center
+        dx = x1-self.xc; dy = y1-self.yc
+        self.S = numpy.sqrt(dx**2+dy**2)                # half-width
+        self.sx = dx/self.S; self.sy = dy/self.S        # tangent
 
-    def velocity(self, x, y, gamma=None):
+    def velocity(self, x, y):
         """Compute the velocity induced by the panel
 
         Inputs:
         x,y   -- the x and y location of the desired velocity
-        gamma -- the panel vortex strength; defaults to self.gamma.
 
         Outputs:
         u,v   -- the x and y components of the velocity
@@ -71,16 +62,13 @@ class Panel(object):
         Examples:
         p_2 = vp.Panel(0,-1,0,1,4)        # make panel on y-axis with gamma=4
         u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
-        u,v = p_2.velocity(-1,0,gamma=(1,1))  # get velocity using gamma=1
         """
-        if gamma is None: gamma = self._gamma  # default gamma
-        gammac = 0.5*(sum(gamma))
-        xp,yp = self._transform_xy(x, y)      # transform
-        up = _get_u(xp, yp, self.S, gammac)    # get u
-        vp = _get_v(xp, yp, self.S, gammac)    # get v
-        if gamma[1]-gamma[0]:                  # O(2)
-            self._O2(up,vp,xp,yp,gamma[1]-gamma[0])
-        return self._rotate_uv(up, vp)       # rotate back
+        if gamma[1]-gamma[0]: # O(2)
+            u0,v0,u1,v1 = self._linear(x,y)
+            return gamma[0]*u0+gamma[1]*u1,gamma[0]*v0+gamma[1]*v1
+        else:                  # O(1)
+            u,v = self._constant(x,y)
+            return gamma[0]*u,gamma[0]*v
 
     def plot(self, style='k'):
         """Plot the vortex panel as a line segment
@@ -94,29 +82,40 @@ class Panel(object):
         """
         return pyplot.plot(self.x, self.y, style, lw=2)
 
+    def _constant(self, x, y):
+        "Constant panel induced velocity"
+        lr, dt, x0, x1, yp = self._transform_xy(x, y)
+        return self._rotate_uv(dt*0.5/numpy.pi, -lr*0.5/numpy.pi)
+
+    def _linear(self, x, y):
+        "Linear panel induced velocity"
+        lr, dt, x0, x1, yp = self._transform_xy(x, y)
+        u0 =  yp*lr-x1*dt
+        u1 = -yp*lr+x0*dt
+        v0 =  x1*lr+yp*dt+2*self.S
+        v1 = -x0*lr-yp*dt-2*self.S
+        c = 0.25/(numpy.pi*self.S)
+        u0,v0 = self._rotate_uv(c*u0, c*v0)
+        u1,v1 = self._rotate_uv(c*u1, c*v1)
+        return u0,v0,u1,v1
+
     def _transform_xy(self, x, y):
         "transform from global to panel coordinates"
         xt = x-self.xc               # shift x
         yt = y-self.yc               # shift y
         xp = xt*self.sx+yt*self.sy   # rotate x
         yp = yt*self.sx-xt*self.sy   # rotate y
-        return xp, yp
-
-    def _O2(self, u, v, x, y, dgamma):
-        "second order velocity contribution"
-        c = dgamma/(4.*numpy.pi*self.S)
-        def f(a, b, s):
-            return 0.5*a*numpy.log((s-x)**2+y**2)+b*numpy.arctan((s-x)/y)
-        u += c*(f(-y,-x,self.S)-f(-y,-x,-self.S))
-        v += c*(f(-x,y,self.S)-f(-x,y,-self.S)-2*self.S)
-        return u,v
+        x0 = xp+self.S; x1 = xp-self.S
+        lr = 0.5*numpy.log((x1**2+yp**2)/(x0**2+yp**2))
+        dt = numpy.arctan(x1/yp)-numpy.arctan(x0/yp)
+        return lr, dt, x0, x1, yp
 
     def _rotate_uv(self, up, vp):
         "rotate velocity back to global coordinates"
         u = up*self.sx-vp*self.sy    # reverse rotate u prime
         v = vp*self.sx+up*self.sy    # reverse rotate v prime
         return u, v
-    
+
 
 class PanelArray(object):
     """Array of vortex panels
@@ -128,24 +127,24 @@ class PanelArray(object):
 
     def __init__(self, panels):
         """Initialize a PanelArray
-        
+
         Inputs:
-        panels -- a numpy array of panels 
+        panels -- a numpy array of panels
 
         Outputs:
         A PanelArray object.
         """
         self.panels = panels # copy the panels
         self.alpha = 0       # default alpha
-        
+
     ### Flow solver
 
     def solve_gamma(self,alpha=0,kutta=[]):
-        """ Set the vortex strength on a PanelArray to enforce the no slip and 
+        """ Set the vortex strength on a PanelArray to enforce the no slip and
         kutta conditions.
 
         Notes:
-        Solves for the normalized gamma by using a unit magnitude background 
+        Solves for the normalized gamma by using a unit magnitude background
         flow, |U|=1.
 
         Inputs:
@@ -161,7 +160,7 @@ class PanelArray(object):
         foil.solve_gamma(alpha=0.1, kutta=[(0,-1)])      # solve for gamma
         foil.plot_flow()                                 # plot the flow
         """
-        
+
         self._set_alpha(alpha)                # set alpha
         A,b = self._construct_A_b()           # construct linear system
         for i in kutta:                       # loop through index pairs
@@ -185,7 +184,7 @@ class PanelArray(object):
         for i,p_i in enumerate(self.panels):     # loop through panels
             p_i._gamma = (gamma[i-1],gamma[i])      # update end-point gammas
             p_i.gamma = 0.5*(gamma[i-1]+gamma[i])   # update center gamma
-    
+
     def _set_alpha(self,alpha):
         "Set angle of attack, but it must be a scalar"
         if(isinstance(alpha, (set, list, tuple, numpy.ndarray))):
@@ -197,15 +196,13 @@ class PanelArray(object):
 
         # get arrays
         xc,yc,sx,sy = self.get_array('xc','yc','sx','sy')
-        
-        # influence of panel p_j on the other panels
-        def f_j(p_j): 
-            u,v = p_j.velocity(xc,yc,gamma=(1,1))  # use gamma=1 to get f
-            return u*sx+v*sy                       # tangent projection
-        
-        # make matrix
-        A = numpy.stack([f_j(p_j) for p_j in self.panels],axis=-1) # loop over panels
-        numpy.fill_diagonal(A, 0.5)                                # fill diagonal with 1/2
+
+        # construct the matrix
+        A = numpy.empty((len(xc), len(xc)))      # empty matrix
+        for j, p_j in enumerate(self.panels):    # loop over panels
+            u,v = p_j._constant(xc,yc)             # f_j at all panel centers
+            A[:,j] = u*sx+v*sy                     # tangential component
+        numpy.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
         # construct the RHS
         b = -numpy.cos(self.alpha)*sx-numpy.sin(self.alpha)*sy
@@ -220,10 +217,9 @@ class PanelArray(object):
         # construct the matrix
         A = numpy.zeros((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
-            u,v = p_j.velocity(xc,yc,gamma=(0,1))   # f_j(S) at all panel centers
-            A[:,j] += -u*sy+v*sx                    # normal component
-            u,v = p_j.velocity(xc,yc,gamma=(1,0))   # f_j(-S) at all panel centers
-            A[:,j-1] += -u*sy+v*sx                  # normal component
+            u0,v0,u1,v1 = p_j._linear(xc,yc)        # f_j at all panel centers
+            A[:,j-1] += -u0*sy+v0*sx                # -S end influence
+            A[:,j] += -u1*sy+v1*sx                  # +S end influence
 
         # construct the RHS
         b = numpy.cos(self.alpha)*sy-numpy.sin(self.alpha)*sx
@@ -273,7 +269,7 @@ class PanelArray(object):
                       u[::4,::4], v[::4,::4])
         # plot panels
         self.plot();
-        
+
     def plot(self, style='k'):
         """Plot the PanelArray panels
 
@@ -298,7 +294,7 @@ class PanelArray(object):
             u, v = u+u_j, v+v_j
 
         return u, v
-    
+
 
     ## Panel array operations
 
@@ -328,7 +324,7 @@ class PanelArray(object):
 
         Notes:
         s[0] = S[0], s[1] = 2*S[0]+S[1], s[2] = 2*S[0]+2*S[1]+S[2], ...
-        
+
         Examples:
         foil = vp.make_jukowski(N=64)       # define the geometry
         s = foil.distance()                 # get the panel path distance
@@ -340,7 +336,7 @@ class PanelArray(object):
 
 def panelize(x,y):
     """Create a PanelArray from a set of points
-    
+
     Inputs:
     x,y    -- the x and y location of the panel end points
 
@@ -355,7 +351,7 @@ def panelize(x,y):
     panels = numpy.empty(N, dtype=object)       # empty array of panels
     for i in range(N):                          # fill the array
         panels[i] = Panel(x[i], y[i], x[i+1], y[i+1])
-        
+
     return PanelArray(panels)
 
 def make_polygon(N,sides):
