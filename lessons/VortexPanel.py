@@ -7,7 +7,7 @@ Class:
     Panel, PanelArray
 
 Methods:
-    panelize
+    panelize, concatenate
     make_polygon, make_ellipse, make_circle, make_jukowski
 
 Imports: numpy, pyplot from matplotlib
@@ -137,6 +137,9 @@ class PanelArray(object):
         """
         self.panels = panels # copy the panels
         self.alpha = 0       # default alpha
+        n = len(panels)
+        self.bodies = [(0,n)]        # range for a body
+        self.left = [n-1]+range(n-1) # index to the left
 
     ### Flow solver
 
@@ -175,16 +178,23 @@ class PanelArray(object):
         "special case of solve_gamma with kutta=[(0,-1)]"
         return self.solve_gamma(alpha,kutta=[(0,-1)])
 
-    def solve_gamma_O2(self,alpha=0,kutta=[(0,-1)]):
+    def solve_gamma_O2(self,alpha=0,kutta=[]):
         "special case of solve_gamma for linearly varying panels"
         self._set_alpha(alpha)                   # set alpha
         A,b = self._construct_A_b_O2()           # construct linear system
-        for j,i in kutta:                        # loop through index pairs
-            A[i,:] = 0; A[i,i] = 1; b[i] = 0        # apply kutta condition
+        if kutta:
+            for j,i in kutta:
+                A[i,:] = 0; A[i,i] = 1; b[i] = 0
+        else:
+            S = self.get_array('S')
+            for s,e in self.bodies:
+                A[s,:] = 0; b[s] = 0
+                A[s,s:e] += S[s:e]
+                A[s,self.left[s:e]] += S[s:e]
         gamma = numpy.linalg.solve(A, b)         # solve for gamma!
         for i,p_i in enumerate(self.panels):     # loop through panels
-            p_i._gamma = (gamma[i-1],gamma[i])      # update end-point gammas
-            p_i.gamma = 0.5*(gamma[i-1]+gamma[i])   # update center gamma
+            p_i._gamma = (gamma[self.left[i]],gamma[i])      # update end-point gammas
+            p_i.gamma = 0.5*sum(p_i._gamma)         # update center gamma
 
     def _set_alpha(self,alpha):
         "Set angle of attack, but it must be a scalar"
@@ -219,7 +229,7 @@ class PanelArray(object):
         A = numpy.zeros((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
             u0,v0,u1,v1 = p_j._linear(xc,yc)        # f_j at all panel centers
-            A[:,j-1] += -u0*sy+v0*sx                # -S end influence
+            A[:,self.left[j]] += -u0*sy+v0*sx       # -S end influence
             A[:,j] += -u1*sy+v1*sx                  # +S end influence
 
         # construct the RHS
@@ -431,3 +441,18 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     # apply jukowski mapping
     x3,y3 = x2*(1+1./r2)/2, y2*(1-1./r2)/2
     return panelize(x3,y3)
+
+def concatenate(a,b):
+    """Concatenate two PanelArray bodies
+
+    Inputs:
+    a,b    -- the PanelArrays
+
+    Outputs:
+    A PanelArray object
+    """
+    c = PanelArray(numpy.concatenate((a.panels,b.panels)))
+    na = len(a.panels)
+    c.bodies = a.bodies+[(s+na,e+na) for s,e in b.bodies]
+    c.left = a.left+[l+na for l in b.left]
+    return c
