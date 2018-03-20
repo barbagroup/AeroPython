@@ -3,18 +3,21 @@
 This module holds routines to determine the potential flow around
 bodies of any shape or number using constant strength vortex panels.
 
-Class:
+Classes:
     Panel, PanelArray
 
 Methods:
     panelize, concatenate
     make_polygon, make_ellipse, make_circle, make_jukowski
 
-Imports: numpy, pyplot from matplotlib
+Imports:
+    numpy, pyplot from matplotlib, march & sep from BoundaryLayer
 """
 
 import numpy
 from matplotlib import pyplot
+from BoundaryLayer import march,sep
+
 numpy.seterr(divide='ignore')
 ### Fundamentals
 
@@ -102,13 +105,12 @@ class Panel(object):
 
     def _transform_xy(self, x, y):
         "transform from global to panel coordinates"
-        xt = x-self.xc               # shift x
-        yt = y-self.yc               # shift y
-        xp = xt*self.sx+yt*self.sy   # rotate x
-        yp = yt*self.sx-xt*self.sy   # rotate y
-        x0 = xp+self.S; x1 = xp-self.S
+        xt = x-self.xc; yt = y-self.yc # shift x,y
+        xp = xt*self.sx+yt*self.sy     # rotate x
+        yp = yt*self.sx-xt*self.sy     # rotate y
+        x0 = xp+self.S; x1 = xp-self.S # from ends
         lr = 0.5*numpy.log((x1**2+yp**2)/(x0**2+yp**2))
-        dt = numpy.arctan(x1/yp)-numpy.arctan(x0/yp)
+        dt = numpy.arctan2(yp,x0)-numpy.arctan2(yp,x1)
         return lr, dt, x0, x1, yp
 
     def _rotate_uv(self, up, vp):
@@ -139,7 +141,7 @@ class PanelArray(object):
         self.alpha = 0       # default alpha
         n = len(panels)
         self.bodies = [(0,n)]        # range for a body
-        self.left = [n-1]+range(n-1) # index to the left
+        self.left = [n-1]+list(range(n-1)) # index to the left
 
     ### Flow solver
 
@@ -343,6 +345,63 @@ class PanelArray(object):
         S = self.get_array('S')
         return numpy.cumsum(2*S)-S
 
+    ### Boundary layers
+    def split(self):
+        """Split PanelArray into two boundary layer sections
+
+        Outputs:
+        top     -- PanelArray defining the top BL
+        bottom  -- PanelArray defining the bottom BL
+
+        Examples:
+        foil = vp.make_jukowski(N=64)        #1. Define the geometry
+        foil.solve_gamma_kutta(alpha=0.1)    #2. Solve for the potential flow
+        foil_top,foil_bot = foil.split()     #3. Split the boundary layers
+        """
+        # split based on flow direction
+        top = [p for p in self.panels if p.gamma<=0]
+        bot = [p for p in self.panels if p.gamma>=0]
+        # Make PanelArrays, running bot back-to-front
+        return PanelArray(top),PanelArray(bot[::-1])
+
+    def march(self,nu,thwaites=False):
+        """ March along a set of BL panels
+
+        Inputs:
+        nu     -- kinematic viscosity
+
+        Outputs:
+        delta2 -- array momentum thicknesses at panel centers
+        lam    -- array of shape function values at panel centers
+        iSep   -- array index of separation point
+
+        Examples:
+        nu = 1e-5
+        circle = vp.make_circle(N=64)     #1. make the geometry
+        circle.solve_gamma()              #2. solve the pflow
+        top,bottom = circle.split()       #3. split the panels
+        delta2,lam,iSep = top.march(nu)   #4. march along the BL
+        """
+        s = self.distance()                   # distance
+        u_e = abs(self.get_array('gamma'))    # velocity
+        return march(s,u_e,nu,thwaites)       # march
+
+    def sep_point(self):
+        """ Predict separation point on a set of BL panels
+
+        Outputs:
+        x_s,y_s -- location of the boundary layer separation point
+
+        Examples:
+        foil = vp.make_jukowski(N=64)       #1. make the geometry
+        foil.solve_gamma_kutta(alpha=0.1)   #2. solve the pflow
+        top,bottom = foil.split()           #3. split the panels
+        x_top,y_top = top.sep_point()       #4. find separation point
+        """
+        _,_,iSep = self.march(1)    # nu doesn't matter
+        x,y = self.get_array('xc','yc')
+        return sep(x,iSep),sep(y,iSep)
+
 ### Geometries
 
 def panelize(x,y):
@@ -358,11 +417,8 @@ def panelize(x,y):
         raise ValueError("point arrays must have len>1")
     if len(x)!=len(y):                          # check input lengths
         raise ValueError("x and y must be same length")
-    N = len(x)-1
-    panels = numpy.empty(N, dtype=object)       # empty array of panels
-    for i in range(N):                          # fill the array
-        panels[i] = Panel(x[i], y[i], x[i+1], y[i+1])
 
+    panels = [Panel(x[i], y[i], x[i+1], y[i+1]) for i in range(len(x)-1)]
     return PanelArray(panels)
 
 def make_polygon(N,sides):
@@ -442,17 +498,21 @@ def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
     x3,y3 = x2*(1+1./r2)/2, y2*(1-1./r2)/2
     return panelize(x3,y3)
 
-def concatenate(a,b):
-    """Concatenate two PanelArray bodies
+def concatenate(a,b,*args):
+    """Concatenate PanelArray bodies
 
     Inputs:
-    a,b    -- the PanelArrays
+    a,b (,*args)    -- two or more PanelArray bodies
 
     Outputs:
     A PanelArray object
     """
-    c = PanelArray(numpy.concatenate((a.panels,b.panels)))
-    na = len(a.panels)
-    c.bodies = a.bodies+[(s+na,e+na) for s,e in b.bodies]
-    c.left = a.left+[l+na for l in b.left]
+    if not args:
+        na = len(a.panels)
+        # c = PanelArray(numpy.concatenate((a.panels,b.panels)))
+        c = PanelArray(a.panels+b.panels)
+        c.bodies = a.bodies+[(s+na,e+na) for s,e in b.bodies]
+        c.left = a.left+[l+na for l in b.left]
+    else:
+        c = concatenate(concatenate(a,b),*args)
     return c
