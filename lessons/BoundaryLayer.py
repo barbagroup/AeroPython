@@ -28,16 +28,16 @@ _lam2_range = _lam_range*mom_ratio(_lam_range)**2
 def _lam2_inv(lam2): return numpy.interp(lam2,_lam2_range,_lam_range)
 
 def march(s,u_s,nu,thwaites=False):
-    """ March along the boundary layer from stagnation to separation
+    """ March the boundary layer momentum integral equation
 
     Notes:
-    Output array values after lam<-12 are meaningless.
+    Output array values after separation(lam<-12) are meaningless.
 
     Inputs:
     s   -- array of distances along the boundary layer; must be positive and increasing
-    u_s -- array of external velocities at locations `x`
+    u_s -- array of external velocities; must be positive
     nu  -- kinematic viscosity; must be scalar
-    thwaites -- use Thwaites approximate method (default=False)
+    thwaites -- Thwaites approximate method flag (default=False)
 
     Outputs:
     delta2 -- momentum thickness array
@@ -53,23 +53,23 @@ def march(s,u_s,nu,thwaites=False):
     du_s = numpy.gradient(u_s)/numpy.gradient(s)
 
     if thwaites:
-        # integrate for delta_2^2
+        # Thwaites approximation for delta_2^2
         delta22 = 0.45*nu/u_s**6*cumtrapz(u_s**5,s,initial=0)
 
-        # check IC
-        if du_s[0]==0: delta22 += 0.44*nu/u_s[0]*s[0]
+        # adjust for (Blasius) flat plate IC
+        if du_s[0]==0: delta22 += 0.441*nu/u_s[0]*s[0]
 
     else:
-        # define ODE
-        def func(y,t): # y=>delta_2^2, t=>s
+        # define Polhausen momentum integral ODE
+        def func(y,t): # delta_2^2 => y, s => t
             u_t,du_t = numpy.interp(t,s,u_s),numpy.interp(t,s,du_s)
             lam = _lam2_inv(y*du_t/nu)
             F = mom_ratio(lam)
             return 2.*nu/u_t*F*(df_0(lam)-lam*(disp_ratio(lam)+2.*F))
 
-        # set IC
+        # set Polhausen IC
         if du_s[0]>0: y0 = 0.077/du_s[0]*nu # stagnation point
-        else: y0 = func(0,0)*s[0]           # flat plate
+        else: y0 = 0.469*nu/u_s[0]*s[0]     # flat plate
 
         # integrate
         delta22 = odeint(func,y0,s)[:,0]

@@ -1,7 +1,8 @@
 """ Solve potential flow problems using vortex panels
 
-This module holds routines to determine the potential flow around
-bodies of any shape or number using constant strength vortex panels.
+This module holds routines to determine the potential flow and
+separation point around bodies of any shape or number using
+vortex panels and laminar boundary layer theory.
 
 Classes:
     Panel, PanelArray
@@ -18,7 +19,6 @@ import numpy
 from matplotlib import pyplot
 from BoundaryLayer import march,sep
 
-numpy.seterr(divide='ignore')
 ### Fundamentals
 
 class Panel(object):
@@ -72,7 +72,7 @@ class Panel(object):
                     self._gamma[0]*v0+self._gamma[1]*v1)
         else:
             u,v = self._constant(x,y)     # constant gamma
-            return self._gamma[0]*u,self._gamma[0]*v
+            return self.gamma*u,self.gamma*v
 
     def plot(self, style='k'):
         """Plot the vortex panel as a line segment
@@ -88,30 +88,24 @@ class Panel(object):
 
     def _constant(self, x, y):
         "Constant panel induced velocity"
-        lr, dt, x0, x1, yp = self._transform_xy(x, y)
-        return self._rotate_uv(dt*0.5/numpy.pi, -lr*0.5/numpy.pi)
+        lr, dt, _, _ = self._transform_xy(x, y)
+        return self._rotate_uv(-dt*0.5/numpy.pi, -lr*0.5/numpy.pi)
 
     def _linear(self, x, y):
         "Linear panel induced velocity"
-        lr, dt, x0, x1, yp = self._transform_xy(x, y)
-        u0 =  yp*lr-x1*dt
-        u1 = -yp*lr+x0*dt
-        v0 =  x1*lr+yp*dt+2*self.S
-        v1 = -x0*lr-yp*dt-2*self.S
-        c = 0.25/(numpy.pi*self.S)
-        u0,v0 = self._rotate_uv(c*u0, c*v0)
-        u1,v1 = self._rotate_uv(c*u1, c*v1)
-        return u0,v0,u1,v1
+        lr, dt, xp, yp = self._transform_xy(x, y)
+        g, h, c = (yp*lr+xp*dt)/self.S, (xp*lr-yp*dt)/self.S+2, 0.25/numpy.pi
+        return (self._rotate_uv(c*( g-dt), c*( h-lr))
+               +self._rotate_uv(c*(-g-dt), c*(-h-lr)))
 
     def _transform_xy(self, x, y):
         "transform from global to panel coordinates"
         xt = x-self.xc; yt = y-self.yc # shift x,y
         xp = xt*self.sx+yt*self.sy     # rotate x
         yp = yt*self.sx-xt*self.sy     # rotate y
-        x0 = xp+self.S; x1 = xp-self.S # from ends
-        lr = 0.5*numpy.log((x1**2+yp**2)/(x0**2+yp**2))
-        dt = numpy.arctan2(yp,x0)-numpy.arctan2(yp,x1)
-        return lr, dt, x0, x1, yp
+        lr = 0.5*numpy.log(((xp-self.S)**2+yp**2)/((xp+self.S)**2+yp**2))
+        dt = numpy.arctan2(yp,xp-self.S)-numpy.arctan2(yp,xp+self.S)
+        return lr, dt, xp, yp
 
     def _rotate_uv(self, up, vp):
         "rotate velocity back to global coordinates"
@@ -345,6 +339,7 @@ class PanelArray(object):
         S = self.get_array('S')
         return numpy.cumsum(2*S)-S
 
+
     ### Boundary layers
     def split(self):
         """Split PanelArray into two boundary layer sections
@@ -361,14 +356,14 @@ class PanelArray(object):
         # split based on flow direction
         top = [p for p in self.panels if p.gamma<=0]
         bot = [p for p in self.panels if p.gamma>=0]
-        # Make PanelArrays, running bot back-to-front
         return PanelArray(top),PanelArray(bot[::-1])
 
     def march(self,nu,thwaites=False):
         """ March along a set of BL panels
 
         Inputs:
-        nu     -- kinematic viscosity
+        nu       -- kinematic viscosity
+        thwaites -- Thwaites approximate method flag (default=False)
 
         Outputs:
         delta2 -- array momentum thicknesses at panel centers
@@ -509,7 +504,6 @@ def concatenate(a,b,*args):
     """
     if not args:
         na = len(a.panels)
-        # c = PanelArray(numpy.concatenate((a.panels,b.panels)))
         c = PanelArray(a.panels+b.panels)
         c.bodies = a.bodies+[(s+na,e+na) for s,e in b.bodies]
         c.left = a.left+[l+na for l in b.left]
