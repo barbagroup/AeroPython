@@ -21,8 +21,8 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 * [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/0_0_QuickPythonIntro.ipynb)
 
 #### Numerical methods
-1. [Vortex sheets](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_1_VortexSheet.ipynb)
-1. [Vortex panel method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_2_VortexPanelMethod.ipynb)
+1. [Vortex panels](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_1_VortexPanel.ipynb)
+1. [Solution method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_2_SolutionMethod.ipynb)
 1. [Lifting bodies](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_3_LiftingBodies.ipynb)
 1. [Boundary layer solver](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_4_BoundaryLayerSolver.ipynb)
 1. [Separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_5_SeparationPrediction.ipynb)
