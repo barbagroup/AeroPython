@@ -10,7 +10,6 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 
 - Click this badge to run the notebooks on the cloud: 
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/weymouth/marinehydro)
-[(check binder status)](http://mybinder.org/status)
 
 - Or read the instructions to run the notebooks on your PC:
 [Personal computer](https://github.com/weymouth/MarineHydro/blob/master/PersonalComputer.md)
