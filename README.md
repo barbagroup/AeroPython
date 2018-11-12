@@ -1,7 +1,7 @@
 
 ## Aerodynamics-Hydrodynamics with Python
 
-"Aerodynamics-Hydrodynamics" (MAE 6226) using the _AeroPython_ series of lessons is taught at the George Washington University by Prof. Lorena A. Barba. The first version of the course ran in Spring 2014 and these IPython Notebooks were prepared for that class, with assistance from Barba-group PhD student Olivier Mesnard. In Spring 2015, we are revising and extending the collection, adding student assignments to strengthen the learning experience. The course is also supported by an open learning space in the [GW SEAS Open edX](https://openedx.seas.gwu.edu/courses/course-v1:MAE+MAE6226+2017/about) platform.
+The _AeroPython_ series of lessons is the core of a university course (Aerodynamics-Hydrodynamics, MAE-6226) by Prof. Lorena A. Barba at the George Washington University. The first version ran in Spring 2014 and these Jupyter Notebooks were prepared for that class, with assistance from Barba-group PhD student Olivier Mesnard. In Spring 2015, revised and extended the collection, adding student assignments to strengthen the learning experience. The course is also supported by an open learning space in the [GW SEAS Open edX](https://openedx.seas.gwu.edu/) platform.
 
 The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
