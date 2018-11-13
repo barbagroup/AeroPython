@@ -42,3 +42,13 @@ The list of lessons is:
 * _Vortex-source panel method_: start with the source panel method of the previous lesson, and add circulation to get a lift force. Introduces the idea of the Kutta condition.
 * _Exercise: Derivation of the vortex-source panel method_.
 * _Assignment: 2D multi-component airfoil_.
+
+The design of the lessons follows the pattern of the **CFD Python** collection [@BarbaForsyth2018], with step-by-step, incrementally worked-out examples, leading to a more complex computational solution. In this case, the final product is a panel-method solution of potential flow around a lifting airfoil.
+
+# Statement of need
+
+Classical aerodynamics based on potential theory can be an arid subject when presented in the traditional "pen-and-paper" approach. 
+It is a fact that the mathematical framework of potential flow was the only tractable way to apply theoretical calculations in aeronautics through all the early years of aviation, including the developmemt of commercial aircraft into the 1980s and later. 
+Yet, the only way to exercise the power of potential-flow aerodynamics is through numerical computation. Without computing, the student can explore only the simplest fundamental solutions of the potential equation.
+
+The essential tool for applying this theoretical framework to aerodynamics is the panel method. The AeroPython series begins with simple point-singularity solutions of the potential equation, and applies the principle of superposition to show how to obtain streamline patterns corresponding to flow around objects. Around the half-way point, the module presents the learner with the fundamental relationship between circulation (via a point vortex) and the production of a lift force. Using a distribution of many point singularities on an airfoil, finally, the module shows how we can obtain pressure distributions, and the lift around an airfoil.
