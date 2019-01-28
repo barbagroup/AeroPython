@@ -22,7 +22,11 @@ bibliography: paper.bib
 
 # Summary
 
-The **AeroPython** learning module is a collection of Jupyter notebooks: one "lesson zero" introduction to Python and NumPy arrays; 11 lessons in potential flow using Python; three student assignments involving coding; and one extra notebook with an exercise deriving the panel-method equations.
+The **AeroPython** learning module presents a computational approach to an engineering course in classical aerodynamics. 
+The audience of such a course would be advanced undergraduate students in mechanical or aerospace engineering (or master's students), with a fluid mechanics pre-requisite. 
+Classical aerodynamics is a broad theoretical subject—this learning module focuses on one topic: the use of potential flow for aerodynamic analysis, via the panel method.
+
+AeroPython is a collection of Jupyter notebooks: one "lesson zero" introduction to Python and NumPy arrays; 11 lessons in potential flow using Python; three student assignments involving a coding mini-project; and one extra notebook with an exercise deriving the panel-method equations.
 
 The list of lessons is:
 
@@ -48,10 +52,13 @@ The design of the lessons follows the pattern of the **CFD Python** collection [
 # Statement of need
 
 Classical aerodynamics based on potential theory can be an arid subject when presented in the traditional "pen-and-paper" approach. 
-It is a fact that the mathematical framework of potential flow was the only tractable way to apply theoretical calculations in aeronautics through all the early years of aviation, including the developmemt of commercial aircraft into the 1980s and later. 
+It is a fact that the mathematical framework of potential flow was the only tractable way to apply theoretical calculations in aeronautics through all the early years of aviation, including the development of commercial aircraft into the 1980s and later. 
 Yet, the only way to exercise the power of potential-flow aerodynamics is through numerical computation. Without computing, the student can explore only the simplest fundamental solutions of the potential equation: point sinks and sources, point vortex, doublet, uniform flow.
 
 The essential tool for applying this theoretical framework to aerodynamics is the panel method, which obtains the strength of a distribution of singularities on a body that makes the body a closed streamline. The addition of vortex singularities to satisfy a Kutta condition allows treating lifting bodies (like airfoils). The AeroPython series begins with simple point-singularity solutions of the potential equation, and applies the principle of superposition to show how to obtain streamline patterns corresponding to flow around objects. Around the half-way point, the module presents the learner with the fundamental relationship between circulation (via a point vortex) and the production of a lift force. Using a distribution of many point singularities on an airfoil, finally, the module shows how we can obtain pressure distributions, and the lift around an airfoil. With this foundation, the student is ready to apply the panel method in authentic engineering situations.
+
+Exercising the power of superposition—the hallmark of the linear potential equation—via numerical computing with Python, and immediately visualizing the resulting flow patterns, the student begins to quickly interpret and imagine the real applications of this theory. 
+At the end of the course, the student is ready to use panel methods for aerodynamic design, and knowingly adopt large software packages such as XFOIL.
 
 # Pedagory and instructional design
 
