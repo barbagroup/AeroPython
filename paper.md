@@ -26,7 +26,7 @@ The **AeroPython** learning module presents a computational approach to an engin
 The audience of such a course would be advanced undergraduate students in mechanical or aerospace engineering (or master's students), with a fluid mechanics pre-requisite. 
 Classical aerodynamics is a broad theoretical subject—this learning module focuses on one topic: the use of potential flow for aerodynamic analysis, via the panel method.
 
-AeroPython is a collection of Jupyter notebooks: one "lesson zero" introduction to Python and NumPy arrays; 11 lessons in potential flow using Python; three student assignments involving a coding mini-project; and one extra notebook with an exercise deriving the panel-method equations.
+**AeroPython** is a collection of Jupyter notebooks: one "lesson zero" introduction to Python and NumPy arrays; 11 lessons in potential flow using Python; three student assignments involving a coding mini-project; and one extra notebook with an exercise deriving the panel-method equations.
 
 The list of lessons is:
 
@@ -67,8 +67,8 @@ It breaks down a rather complex numerical problem—in this case, the panel meth
 The pedagogical strategy relies on the worked-example effect [@sweller2006worked, @chen2015worked] and sub-goals [@catrambone1998, @margulieuxETal2016]. 
 In the classroom, students are guided to re-write the worked examples in their own Jupyter notebooks, and annotate with their own reflections during class discussions. 
 These discussions may take the form of short introductions to a new section of the course, or a debrief after completing a sub-goal. 
-Classroom activity may also peppered with "pair-share" exercises, and individual inspection of student work by the instructor. 
-Some assigned readings can also be selected; see some examples in the syllabus for a course at the George Washington University usign these lessons [@Barba2017]. 
-Barba has taught the semester-long course there four times since 2015, and Mesnard is currently teaching its fifth iteration.
+Classroom activity may also be peppered with "pair-share" exercises, and individual inspection of student work by the instructor. 
+Some assigned readings can also be selected; see some examples in the syllabus for a course at the George Washington University using these lessons [@Barba2017]. 
+Barba has taught the semester-long course there four times since 2014, and Mesnard is currently teaching its fifth iteration.
 
 # References
