@@ -58,10 +58,12 @@ Yet, the only way to exercise the power of potential-flow aerodynamics is throug
 The essential tool for applying this theoretical framework to aerodynamics is the panel method, which obtains the strength of a distribution of singularities on a body that makes the body a closed streamline. The addition of vortex singularities to satisfy a Kutta condition allows treating lifting bodies (like airfoils). The AeroPython series begins with simple point-singularity solutions of the potential equation, and applies the principle of superposition to show how to obtain streamline patterns corresponding to flow around objects. Around the half-way point, the module presents the learner with the fundamental relationship between circulation (via a point vortex) and the production of a lift force. Using a distribution of many point singularities on an airfoil, finally, the module shows how we can obtain pressure distributions, and the lift around an airfoil. With this foundation, the student is ready to apply the panel method in authentic engineering situations.
 
 Exercising the power of superposition—the hallmark of the linear potential equation—via numerical computing with Python, and immediately visualizing the resulting flow patterns, the student begins to quickly interpret and imagine the real applications of this theory. 
-At the end of the course, the student is ready to use panel methods for aerodynamic design, and knowingly adopt large software packages such as XFOIL [@drela1989xfoil].
+At the end of the course, the student is ready to use panel methods for aerodynamic design, and knowingly adopt large software packages such as XFOIL (http://web.mit.edu/drela/Public/web/xfoil/) [@drela1989xfoil].
 
-# Pedagory and instructional design
+# Pedagogy and instructional design
 
-
+**AeroPython** adopts the instructional design patterns used in the **CFD Python** learning module [@BarbaForsyth2018]. 
+It breaks down a rather complex numerical problem—in this case, the panel method for lifting bodies—into small steps, it chunks these steps together logically, and adds narrative and context. 
+The pedagogical strategy relies on the worked-example effect [@sweller2006worked, @chen2015worked] and sub-goals.
 
 # References
