@@ -9,6 +9,8 @@ The materials are distributed publicly and openly under a Creative Commons Attri
 — Barba, Lorena A.; Mesnard, Olivier (2014): AeroPython. figshare. Code.
 https://doi.org/10.6084/m9.figshare.1004727.v3
 
+[![status](http://jose.theoj.org/papers/b679b34c976beec0bc64807bf087a468/status.svg)](http://jose.theoj.org/papers/b679b34c976beec0bc64807bf087a468)
+
 ### List of notebooks:
 
 #### 0. Getting Started
