@@ -1,9 +1,13 @@
 
 ## Classical Aerodynamics with Python
 
-The _AeroPython_ series of lessons is the core of a university course (Aerodynamics-Hydrodynamics, MAE-6226) by Prof. Lorena A. Barba at the George Washington University. The first version ran in Spring 2014 and these Jupyter Notebooks were prepared for that class, with assistance from Barba-group PhD student Olivier Mesnard. In Spring 2015, revised and extended the collection, adding student assignments to strengthen the learning experience. The course is also supported by an open learning space in the [GW SEAS Open edX](https://openedx.seas.gwu.edu/) platform.
+The _AeroPython_ series of lessons is the core of a university course (Aerodynamics-Hydrodynamics, MAE-6226) by Prof. Lorena A. Barba at the George Washington University. The first version ran in Spring 2014 and these Jupyter Notebooks were prepared for that class, with assistance from Barba-group PhD student Olivier Mesnard. In Spring 2015, we revised and extended the collection, adding student assignments to strengthen the learning experience. The course is also supported by an open learning space in the [GW SEAS Open edX](https://openedx.seas.gwu.edu/) platform.
 
 The materials are distributed publicly and openly under a Creative Commons Attribution license, [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+##### Archive:
+— Barba, Lorena A.; Mesnard, Olivier (2014): AeroPython. figshare. Code.
+https://doi.org/10.6084/m9.figshare.1004727.v3
 
 ### List of notebooks:
 
