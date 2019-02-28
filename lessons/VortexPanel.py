@@ -9,15 +9,15 @@ Classes:
 
 Methods:
     panelize, concatenate
-    make_polygon, make_ellipse, make_circle, make_jukowski
+    make_ellipse, make_circle, make_jfoil
 
 Imports:
     numpy, pyplot from matplotlib, march & sep from BoundaryLayer
 """
 
-import numpy
-from matplotlib import pyplot
-from BoundaryLayer import march,sep
+import numpy as np
+from matplotlib import pyplot as plt
+from BoundaryLayer import thwaites,sep
 
 ### Fundamentals
 
@@ -50,7 +50,7 @@ class Panel(object):
         self.gamma = gamma; self._gamma = (gamma,gamma) # copy gamma
         self.xc = 0.5*(x0+x1); self.yc = 0.5*(y0+y1)    # panel center
         dx = x1-self.xc; dy = y1-self.yc
-        self.S = numpy.sqrt(dx**2+dy**2)                # half-width
+        self.S = np.sqrt(dx**2+dy**2)                # half-width
         self.sx = dx/self.S; self.sy = dy/self.S        # tangent
 
     def velocity(self, x, y):
@@ -84,17 +84,17 @@ class Panel(object):
         my_panel = vp.Panel(0,-1,0,1)  # creates panel on y-axis
         my_panel.plot()                # plot the panel
         """
-        return pyplot.plot(self.x, self.y, style, lw=2)
+        return plt.plot(self.x, self.y, style, lw=2)
 
     def _constant(self, x, y):
         "Constant panel induced velocity"
         lr, dt, _, _ = self._transform_xy(x, y)
-        return self._rotate_uv(-dt*0.5/numpy.pi, -lr*0.5/numpy.pi)
+        return self._rotate_uv(-dt*0.5/np.pi, -lr*0.5/np.pi)
 
     def _linear(self, x, y):
         "Linear panel induced velocity"
         lr, dt, xp, yp = self._transform_xy(x, y)
-        g, h, c = (yp*lr+xp*dt)/self.S, (xp*lr-yp*dt)/self.S+2, 0.25/numpy.pi
+        g, h, c = (yp*lr+xp*dt)/self.S, (xp*lr-yp*dt)/self.S+2, 0.25/np.pi
         return (self._rotate_uv(c*( g-dt), c*( h-lr))
                +self._rotate_uv(c*(-g-dt), c*(-h-lr)))
 
@@ -103,8 +103,8 @@ class Panel(object):
         xt = x-self.xc; yt = y-self.yc # shift x,y
         xp = xt*self.sx+yt*self.sy     # rotate x
         yp = yt*self.sx-xt*self.sy     # rotate y
-        lr = 0.5*numpy.log(((xp-self.S)**2+yp**2)/((xp+self.S)**2+yp**2))
-        dt = numpy.arctan2(yp,xp-self.S)-numpy.arctan2(yp,xp+self.S)
+        lr = 0.5*np.log(((xp-self.S)**2+yp**2)/((xp+self.S)**2+yp**2))
+        dt = np.arctan2(yp,xp-self.S)-np.arctan2(yp,xp+self.S)
         return lr, dt, xp, yp
 
     def _rotate_uv(self, up, vp):
@@ -118,7 +118,7 @@ class PanelArray(object):
     """Array of vortex panels
 
     Attributes:
-    panels -- the numpy array of panels
+    panels -- the np array of panels
     alpha  -- the flow angle of attack
     """
 
@@ -126,7 +126,7 @@ class PanelArray(object):
         """Initialize a PanelArray
 
         Inputs:
-        panels -- a numpy array of panels
+        panels -- a np array of panels
 
         Outputs:
         A PanelArray object.
@@ -156,7 +156,7 @@ class PanelArray(object):
         gamma of the PanelArray is updated.
 
         Examples:
-        foil = vp.make_jukowski(N=32)                    # make a Panel array
+        foil = vp.make_jfoil(N=32)                    # make a Panel array
         foil.solve_gamma(alpha=0.1, kutta=[(0,-1)])      # solve for gamma
         foil.plot_flow()                                 # plot the flow
         """
@@ -165,7 +165,7 @@ class PanelArray(object):
         A,b = self._construct_A_b()           # construct linear system
         for i in kutta:                       # loop through index pairs
             A[i[0]:i[1],i] += 1                  # apply kutta condition
-        gamma = numpy.linalg.solve(A, b)      # solve for gamma
+        gamma = np.linalg.solve(A, b)      # solve for gamma
         for i,p_i in enumerate(self.panels):  # loop through panels
             p_i.gamma = gamma[i]                 # update center gamma
             p_i._gamma = (gamma[i],gamma[i])     # update end-point gammas
@@ -187,14 +187,14 @@ class PanelArray(object):
                 A[s,:] = 0; b[s] = 0
                 A[s,s:e] += S[s:e]
                 A[s,self.left[s:e]] += S[s:e]
-        gamma = numpy.linalg.solve(A, b)         # solve for gamma!
+        gamma = np.linalg.solve(A, b)         # solve for gamma!
         for i,p_i in enumerate(self.panels):     # loop through panels
             p_i._gamma = (gamma[self.left[i]],gamma[i])      # update end-point gammas
             p_i.gamma = 0.5*sum(p_i._gamma)         # update center gamma
 
     def _set_alpha(self,alpha):
         "Set angle of attack, but it must be a scalar"
-        if(isinstance(alpha, (set, list, tuple, numpy.ndarray))):
+        if(isinstance(alpha, (set, list, tuple, np.ndarray))):
             raise TypeError('Only accepts scalar alpha')
         self.alpha = alpha
 
@@ -205,14 +205,14 @@ class PanelArray(object):
         xc,yc,sx,sy = self.get_array('xc','yc','sx','sy')
 
         # construct the matrix
-        A = numpy.empty((len(xc), len(xc)))      # empty matrix
+        A = np.empty((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
             u,v = p_j._constant(xc,yc)             # f_j at all panel centers
             A[:,j] = u*sx+v*sy                     # tangential component
-        numpy.fill_diagonal(A,0.5)               # fill diagonal with 1/2
+        np.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
         # construct the RHS
-        b = -numpy.cos(self.alpha)*sx-numpy.sin(self.alpha)*sy
+        b = -np.cos(self.alpha)*sx-np.sin(self.alpha)*sy
         return A, b
 
     def _construct_A_b_O2(self):
@@ -222,14 +222,14 @@ class PanelArray(object):
         xc,yc,sx,sy = self.get_array('xc','yc','sx','sy')
 
         # construct the matrix
-        A = numpy.zeros((len(xc), len(xc)))      # empty matrix
+        A = np.zeros((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
             u0,v0,u1,v1 = p_j._linear(xc,yc)        # f_j at all panel centers
             A[:,self.left[j]] += -u0*sy+v0*sx       # -S end influence
             A[:,j] += -u1*sy+v1*sx                  # +S end influence
 
         # construct the RHS
-        b = numpy.cos(self.alpha)*sy-numpy.sin(self.alpha)*sx
+        b = np.cos(self.alpha)*sy-np.sin(self.alpha)*sx
         return A, b
 
 
@@ -246,7 +246,7 @@ class PanelArray(object):
         vmax   -- maximum contour level; defaults to the field max
 
         Outputs:
-        pyplot of the flow vectors, velocity magnitude contours, and the panels.
+        plot of the flow vectors, velocity magnitude contours, and the panels.
 
         Examples:
         circle = vp.make_circle(N=32)      # make a Panel array
@@ -254,25 +254,25 @@ class PanelArray(object):
         circle.plot_flow()                 # plot the flow
         """
         # define the grid
-        line = numpy.linspace(-size, size, 100)  # computes a 1D-array
-        x, y = numpy.meshgrid(line, line)        # generates a mesh grid
+        line = np.linspace(-size, size, 100)  # computes a 1D-array
+        x, y = np.meshgrid(line, line)        # generates a mesh grid
 
         # get the velocity from the free stream and panels
         u, v = self._flow_velocity(x, y)
 
         # plot it
-        pyplot.figure(figsize=(9,7))                # set size
-        pyplot.xlabel('x', fontsize=14)             # label x
-        pyplot.ylabel('y', fontsize=14, rotation=0) # label y
+        plt.figure(figsize=(9,7))                # set size
+        plt.xlabel('x', fontsize=14)             # label x
+        plt.ylabel('y', fontsize=14, rotation=0) # label y
 
         # plot contours
-        m = numpy.sqrt(u**2+v**2)
-        velocity = pyplot.contourf(x, y, m, vmin=0, vmax=vmax)
-        cbar = pyplot.colorbar(velocity)
+        m = np.sqrt(u**2+v**2)
+        velocity = plt.contourf(x, y, m, vmin=0, vmax=vmax)
+        cbar = plt.colorbar(velocity)
         cbar.set_label('Velocity magnitude', fontsize=14);
 
         # plot vector field
-        pyplot.quiver(x[::4,::4], y[::4,::4],
+        plt.quiver(x[::4,::4], y[::4,::4],
                       u[::4,::4], v[::4,::4])
         # plot panels
         self.plot();
@@ -292,8 +292,8 @@ class PanelArray(object):
     def _flow_velocity(self,x,y):
         "get the velocity induced by panels and unit velocity at angle `alpha`"
         # get the uniform velocity ( make it the same size & shape as x )
-        u = numpy.cos(self.alpha)*numpy.ones_like(x)
-        v = numpy.sin(self.alpha)*numpy.ones_like(x)
+        u = np.cos(self.alpha)*np.ones_like(x)
+        v = np.sin(self.alpha)*np.ones_like(x)
 
         # add the velocity contribution from each panel
         for p_j in self.panels:
@@ -306,7 +306,7 @@ class PanelArray(object):
     ## Panel array operations
 
     def get_array(self,key,*args):
-        """ Generate numpy arrays of panel attributes
+        """ Generate np arrays of panel attributes
 
         Notes:
         Use help(Panel) to see available attributes
@@ -315,14 +315,14 @@ class PanelArray(object):
         key (,*args) -- one or more names of the desired attributes
 
         Outputs:
-        key_vals     -- numpy arrays filled with the named attributes
+        key_vals     -- np arrays filled with the named attributes
 
         Examples:
         circle = vp.make_circle(N=32)           # make a PanelArray
         xc,yc = circle.get_array('xc','yc')     # get arrays of the panel centers
         """
         if not args:
-            return numpy.array([getattr(p,key) for p in self.panels])
+            return np.array([getattr(p,key) for p in self.panels])
         else:
             return [self.get_array(k) for k in (key,)+args]
 
@@ -333,11 +333,11 @@ class PanelArray(object):
         s[0] = S[0], s[1] = 2*S[0]+S[1], s[2] = 2*S[0]+2*S[1]+S[2], ...
 
         Examples:
-        foil = vp.make_jukowski(N=64)       # define the geometry
+        foil = vp.make_jfoil(N=64)       # define the geometry
         s = foil.distance()                 # get the panel path distance
         """
         S = self.get_array('S')
-        return numpy.cumsum(2*S)-S
+        return np.cumsum(2*S)-S
 
 
     ### Boundary layers
@@ -349,7 +349,7 @@ class PanelArray(object):
         bottom  -- PanelArray defining the bottom BL
 
         Examples:
-        foil = vp.make_jukowski(N=64)        #1. Define the geometry
+        foil = vp.make_jfoil(N=64)        #1. Define the geometry
         foil.solve_gamma_kutta(alpha=0.1)    #2. Solve for the potential flow
         foil_top,foil_bot = foil.split()     #3. Split the boundary layers
         """
@@ -358,12 +358,11 @@ class PanelArray(object):
         bot = [p for p in self.panels if p.gamma>=0]
         return PanelArray(top),PanelArray(bot[::-1])
 
-    def march(self,nu,thwaites=False):
+    def march(self,nu):
         """ March along a set of BL panels
 
         Inputs:
         nu       -- kinematic viscosity
-        thwaites -- Thwaites approximate method flag (default=False)
 
         Outputs:
         delta2 -- array momentum thicknesses at panel centers
@@ -379,7 +378,7 @@ class PanelArray(object):
         """
         s = self.distance()                   # distance
         u_e = abs(self.get_array('gamma'))    # velocity
-        return march(s,u_e,nu,thwaites)       # march
+        return thwaites(s,u_e)                # march
 
     def sep_point(self):
         """ Predict separation point on a set of BL panels
@@ -388,7 +387,7 @@ class PanelArray(object):
         x_s,y_s -- location of the boundary layer separation point
 
         Examples:
-        foil = vp.make_jukowski(N=64)       #1. make the geometry
+        foil = vp.make_jfoil(N=64)       #1. make the geometry
         foil.solve_gamma_kutta(alpha=0.1)   #2. solve the pflow
         top,bottom = foil.split()           #3. split the panels
         x_top,y_top = top.sep_point()       #4. find separation point
@@ -416,27 +415,6 @@ def panelize(x,y):
     panels = [Panel(x[i], y[i], x[i+1], y[i+1]) for i in range(len(x)-1)]
     return PanelArray(panels)
 
-def make_polygon(N,sides):
-    """ Make a polygonal PanelArray
-
-    Inputs:
-    N     -- number of panels to use
-    sides -- number of sides in the polygon
-
-    Outputs:
-    A PanelArray object; see help(PanelArray)
-
-    Examples:
-    triangle = vp.make_polygon(N=33,sides=3)  # make a triangular Panel array
-    triangle.plot()                           # plot the geometry
-    """
-    # define the end-points
-    theta = numpy.linspace(0, -2*numpy.pi, N+1)          # equally spaced theta
-    r = numpy.cos(numpy.pi/sides)/numpy.cos(             # r(theta)
-            theta % (2.*numpy.pi/sides)-numpy.pi/sides)
-    x,y = r*numpy.cos(theta), r*numpy.sin(theta)         # get the coordinates
-    return panelize(x,y)
-
 def make_ellipse(N, t_c, xcen=0, ycen=0):
     """ Make an elliptical PanelArray; defaults to circle
 
@@ -452,46 +430,40 @@ def make_ellipse(N, t_c, xcen=0, ycen=0):
     ellipse = vp.make_ellipse(N=32,t_c=0.5) # make a 1:2 elliptical Panel array
     ellipse.plot()                          # plot the geometry
     """
-    theta = numpy.linspace(0, -2*numpy.pi, N+1)
-    x,y = numpy.cos(theta)+xcen, numpy.sin(theta)*t_c+ycen
+    theta = np.linspace(0, -2*np.pi, N+1)
+    x,y = np.cos(theta)+xcen, np.sin(theta)*t_c+ycen
     return panelize(x,y)
 
 def make_circle(N, xcen=0, ycen=0):
-    "Make circle as special case of make_ellipse"
+    "Make a circle PanelArray"
     return make_ellipse(N, t_c=1, xcen=xcen, ycen=ycen)
 
-def make_jukowski(N, dx=0.18, dtheta=0, dr=0):
+def make_jfoil(N, xcen=-0.1, ycen=0):
     """Make a foil-shaped PanelArray using the Jukowski mapping
 
     Note:
-    Foil-shapes are obtained adjusting a circle and then mapping
+    A circle passing through point (1,0) is mapped to create the sharp foil
 
     Inputs:
     N         -- number of panels to use
-    dx        -- negative extent beyond x = -1
-    dtheta    -- angle of rotation around (1,0)
-    dr        -- radius extent beyond r = 1
+    xcen,ycen -- center of the circle before mapping
 
     Outputs:
     A PanelArray object; see help(PanelArray)
 
     Examples:
-    foil = vp.make_jukowski(N=64)    # make a symmetric foil Panel array
+    foil = vp.make_jfoil(N=64)    # make a symmetric foil Panel array
     foil.plot()                      # plot the geometry
     """
     # define the circle
-    theta = numpy.linspace(0, -2*numpy.pi, N+1)
-    r = (1+dx)/numpy.cos(dtheta)+dr
-    x,y = r*numpy.cos(theta)-(r-1-dr), r*numpy.sin(theta)
+    theta = np.linspace(0, -2*np.pi, N+1)
+    r = np.sqrt(ycen**2+(1-xcen)**2)
+    t0 = np.arctan2(ycen,1-xcen)
+    x,y = xcen+r*np.cos(theta-t0), ycen+r*np.sin(theta-t0)
 
-    #rotate around (1,0)
-    ds,dc = numpy.sin(dtheta),numpy.cos(dtheta)
-    x2,y2 =  dc*(x-1)+ds*y+1, -ds*(x-1)+dc*y
-    r2 = x2**2+y2**2
-
-    # apply jukowski mapping
-    x3,y3 = x2*(1+1./r2)/2, y2*(1-1./r2)/2
-    return panelize(x3,y3)
+    # apply jukowski mapping and panelize
+    r2 = x**2+y**2
+    return panelize(x*(1+1/r2)/2,y*(1-1/r2))
 
 def concatenate(a,b,*args):
     """Concatenate PanelArray bodies
