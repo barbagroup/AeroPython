@@ -170,10 +170,6 @@ class PanelArray(object):
             p_i.gamma = gamma[i]                 # update center gamma
             p_i._gamma = (gamma[i],gamma[i])     # update end-point gammas
 
-    def solve_gamma_kutta(self,alpha=0):
-        "special case of solve_gamma with kutta=[(0,-1)]"
-        return self.solve_gamma(alpha,kutta=[(0,-1)])
-
     def solve_gamma_O2(self,alpha=0,kutta=[]):
         "special case of solve_gamma for linearly varying panels"
         self._set_alpha(alpha)                   # set alpha
