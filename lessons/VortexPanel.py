@@ -459,8 +459,8 @@ def make_jfoil(N, xcen=-0.1, ycen=0):
     A PanelArray object; see help(PanelArray)
 
     Examples:
-    foil = vp.make_jfoil(N=64)    # make a symmetric foil Panel array
-    foil.plot()                      # plot the geometry
+    foil = vp.make_jfoil(N=34)  # make
+    foil.plot()                 # plot
     """
     # define the circle
     theta = np.linspace(0, -2*np.pi, N+1)
