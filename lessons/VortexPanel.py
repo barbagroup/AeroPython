@@ -67,11 +67,11 @@ class Panel(object):
         u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
         """
         if self._gamma[1]-self._gamma[0]: # non-constant gamma
-            u0,v0,u1,v1 = self._linear(x,y)
+            u0,v0,u1,v1 = self.linear(x,y)
             return (self._gamma[0]*u0+self._gamma[1]*u1,
                     self._gamma[0]*v0+self._gamma[1]*v1)
         else:
-            u,v = self._constant(x,y)     # constant gamma
+            u,v = self.constant(x,y)     # constant gamma
             return self.gamma*u,self.gamma*v
 
     def plot(self, style='k'):
@@ -86,12 +86,12 @@ class Panel(object):
         """
         return plt.plot(self.x, self.y, style, lw=2)
 
-    def _constant(self, x, y):
+    def constant(self, x, y):
         "Constant panel induced velocity"
         lr, dt, _, _ = self._transform_xy(x, y)
         return self._rotate_uv(-dt*0.5/np.pi, -lr*0.5/np.pi)
 
-    def _linear(self, x, y):
+    def linear(self, x, y):
         "Linear panel induced velocity"
         lr, dt, xp, yp = self._transform_xy(x, y)
         g, h, c = (yp*lr+xp*dt)/self.S, (xp*lr-yp*dt)/self.S+2, 0.25/np.pi
@@ -165,7 +165,7 @@ class PanelArray(object):
         A,b = self._construct_A_b()           # construct linear system
         for i in kutta:                       # loop through index pairs
             A[i[0]:i[1],i] += 1                  # apply kutta condition
-        gamma = np.linalg.solve(A, b)      # solve for gamma
+        gamma = np.linalg.solve(A, b)         # solve for gamma
         for i,p_i in enumerate(self.panels):  # loop through panels
             p_i.gamma = gamma[i]                 # update center gamma
             p_i._gamma = (gamma[i],gamma[i])     # update end-point gammas
@@ -183,7 +183,7 @@ class PanelArray(object):
                 A[s,:] = 0; b[s] = 0
                 A[s,s:e] += S[s:e]
                 A[s,self.left[s:e]] += S[s:e]
-        gamma = np.linalg.solve(A, b)         # solve for gamma!
+        gamma = np.linalg.solve(A, b)            # solve for gamma!
         for i,p_i in enumerate(self.panels):     # loop through panels
             p_i._gamma = (gamma[self.left[i]],gamma[i])      # update end-point gammas
             p_i.gamma = 0.5*sum(p_i._gamma)         # update center gamma
@@ -202,9 +202,9 @@ class PanelArray(object):
 
         # construct the matrix
         A = np.empty((len(xc), len(xc)))      # empty matrix
-        for j, p_j in enumerate(self.panels):    # loop over panels
-            u,v = p_j._constant(xc,yc)             # f_j at all panel centers
-            A[:,j] = u*sx+v*sy                     # tangential component
+        for j, p_j in enumerate(self.panels): # loop over panels
+            fx,fy = p_j.constant(xc,yc)           # f_j at all panel centers
+            A[:,j] = fx*sx+fy*sy                   # tangential component
         np.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
         # construct the RHS
@@ -218,7 +218,7 @@ class PanelArray(object):
         xc,yc,sx,sy = self.get_array('xc','yc','sx','sy')
 
         # construct the matrix
-        A = np.zeros((len(xc), len(xc)))      # empty matrix
+        A = np.zeros((len(xc), len(xc)))         # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
             u0,v0,u1,v1 = p_j._linear(xc,yc)        # f_j at all panel centers
             A[:,self.left[j]] += -u0*sy+v0*sx       # -S end influence
@@ -254,7 +254,7 @@ class PanelArray(object):
         x, y = np.meshgrid(line, line)        # generates a mesh grid
 
         # get the velocity from the free stream and panels
-        u, v = self._flow_velocity(x, y)
+        u, v = self.velocity(x, y)
 
         # plot it
         plt.figure(figsize=(9,7))                # set size
@@ -285,13 +285,11 @@ class PanelArray(object):
         """
         for p in self.panels: p.plot(style)
 
-    def _flow_velocity(self,x,y):
-        "get the velocity induced by panels and unit velocity at angle `alpha`"
-        # get the uniform velocity ( make it the same size & shape as x )
+    def velocity(self,x,y):
+        "Velocity at (x,y) induced by the free stream and PanelArray"
         u = np.cos(self.alpha)*np.ones_like(x)
         v = np.sin(self.alpha)*np.ones_like(x)
 
-        # add the velocity contribution from each panel
         for p_j in self.panels:
             u_j, v_j = p_j.velocity(x, y)
             u, v = u+u_j, v+v_j
@@ -403,13 +401,12 @@ def panelize(x,y):
     Outputs:
     A PanelArray object
     """
-    if len(x)<2:                                # check input lengths
+    if len(x)<2:         # check input lengths
         raise ValueError("point arrays must have len>1")
-    if len(x)!=len(y):                          # check input lengths
+    if len(x)!=len(y):   # check input lengths
         raise ValueError("x and y must be same length")
-
-    panels = [Panel(x[i], y[i], x[i+1], y[i+1]) for i in range(len(x)-1)]
-    return PanelArray(panels)
+    return PanelArray([Panel(x[i], y[i], x[i+1], y[i+1])
+                for i in range(len(x)-1)])
 
 def make_ellipse(N, t_c, xcen=0, ycen=0):
     """ Make an elliptical PanelArray; defaults to circle
@@ -422,7 +419,7 @@ def make_ellipse(N, t_c, xcen=0, ycen=0):
     Outputs:
     A PanelArray object; see help(PanelArray)
 
-    Examples:
+    Example:
     ellipse = vp.make_ellipse(N=32,t_c=0.5) # make a 1:2 elliptical Panel array
     ellipse.plot()                          # plot the geometry
     """
@@ -431,8 +428,22 @@ def make_ellipse(N, t_c, xcen=0, ycen=0):
     return panelize(x,y)
 
 def make_circle(N, xcen=0, ycen=0):
-    "Make a circle PanelArray"
-    return make_ellipse(N, t_c=1, xcen=xcen, ycen=ycen)
+    """ Make an circular PanelArray
+
+    Inputs:
+    N         -- number of panels to use
+    xcen,ycen -- circle center; defaults to origin
+
+    Outputs:
+    A PanelArray object; see help(PanelArray)
+
+    Example:
+    circle = vp.make_circle(N=32) # make
+    circle.plot()                 # plot
+    """
+    theta = np.linspace(0, -2*np.pi, N+1)
+    x,y = np.cos(theta)+xcen, np.sin(theta)+ycen
+    return panelize(x,y)
 
 def make_jfoil(N, xcen=-0.1, ycen=0):
     """Make a foil-shaped PanelArray using the Jukowski mapping
