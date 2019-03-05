@@ -17,7 +17,7 @@ Imports:
 
 import numpy as np
 from matplotlib import pyplot as plt
-from BoundaryLayer import thwaites,sep
+import BoundaryLayer as bl
 
 ### Fundamentals
 
@@ -352,27 +352,18 @@ class PanelArray(object):
         bot = [p for p in self.panels if p.gamma>=0]
         return PanelArray(top),PanelArray(bot[::-1])
 
-    def march(self,nu):
-        """ March along a set of BL panels
+    def thwaites(self):
+        """ Wrapper for BoundaryLayer.thwaites
 
-        Inputs:
-        nu       -- kinematic viscosity
-
-        Outputs:
-        delta2 -- array momentum thicknesses at panel centers
-        lam    -- array of shape function values at panel centers
-        iSep   -- array index of separation point
-
-        Examples:
-        nu = 1e-5
-        circle = vp.make_circle(N=64)     #1. make the geometry
-        circle.solve_gamma()              #2. solve the pflow
+        Example:
+        circle = vp.make_circle(N=32)     #1. make the geometry
+        circle.solve_gamma_O2()           #2. solve the pflow
         top,bottom = circle.split()       #3. split the panels
-        delta2,lam,iSep = top.march(nu)   #4. march along the BL
+        delta2,lam,iSep = top.thwaites()  #4. get BL props
         """
-        s = self.distance()                   # distance
-        u_e = abs(self.get_array('gamma'))    # velocity
-        return thwaites(s,u_e)                # march
+        s = self.distance()                # distance
+        u_s = abs(self.get_array('gamma')) # velocity
+        return bl.thwaites(s,u_s)          # thwaites
 
     def sep_point(self):
         """ Predict separation point on a set of BL panels
@@ -381,14 +372,14 @@ class PanelArray(object):
         x_s,y_s -- location of the boundary layer separation point
 
         Examples:
-        foil = vp.make_jfoil(N=64)       #1. make the geometry
-        foil.solve_gamma_kutta(alpha=0.1)   #2. solve the pflow
-        top,bottom = foil.split()           #3. split the panels
-        x_top,y_top = top.sep_point()       #4. find separation point
+        circle = vp.make_circle(N=32)  #1. make the geometry
+        circle.solve_gamma_O2()        #2. solve the pflow
+        top,bottom = circle.split()    #3. split the panels
+        x_s,y_s = top.sep_point()      #4. get sep point
         """
-        _,_,iSep = self.march(1)    # nu doesn't matter
-        x,y = self.get_array('xc','yc')
-        return sep(x,iSep),sep(y,iSep)
+        _,_,iSep = self.thwaites()            # only need iSep
+        x,y = self.get_array('xc','yc')       # panel centers
+        return bl.sep(x,iSep),bl.sep(y,iSep)  # interpolate 
 
 ### Geometries
 
