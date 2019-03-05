@@ -38,36 +38,45 @@ def thwaites(s,u_s):
     lam    -- shape factor array
     iSep   -- distance along array to separation point (iSep=len(s) means no separation)
 
-    Examples:
-    s = np.linspace(0,np.pi,16)      # define distance array
-    u_s = 2*np.sin(s)                # define external velocity (circle example)
-    delta2,lam,iSep = march(s,u_s)   # march along to the point of separation
+    Example:
+    s = np.linspace(0,np.pi,32)          # distance along BL
+    u_s = 2*np.sin(s)                    # circle external velocity
+    delta2,lam,iSep = bl.thwaites(s,u_s) # BL properties
     """
     # Thwaites approximation for delta_2^2
-    delta22 = 0.45/u_s**6*cumtrapz(u_s**5,s,initial=0)
+    delta22 = 0.45*cumtrapz(u_s**5,s,initial=0)
+    delta22[u_s>0] /= u_s[u_s>0]**6
+    
 
     # adjust for (Blasius) flat plate IC
-    if du_s[0]==0: delta22 += 0.441*nu/u_s[0]*s[0]
-
-    # Velocity gradient and shape factor lambda
     du_s = np.gradient(u_s)/np.gradient(s)
+    if du_s[0]==0: delta22 += 0.441/u_s[0]*s[0]
+
+    # adjust for stagnation IC
+    elif u_s[0]==0: delta22[0] = 0.075/du_s[0]
+        
+    # get shape factor lambda
     lam = np.interp(delta22*du_s,_lam2_range,_lam_range)
-    
+
     # find separation point
     i = np.count_nonzero(lam>-12)
     if(i==len(s)):
         iSep = i
     else:
         iSep = np.interp(12,-lam[i-1:i+1],[i-1,i])
-
+   
+    # Clean up results after separation
+    delta22[range(i+1,len(s))]=0 
+    lam[range(i+1,len(s))]=-12 
+        
     # Return delta_2 and lambda and iSep
     return np.sqrt(delta22),lam,iSep
 
-def sep(y,index=False,lam=False):
+def sep(y,iSep):
     """ Interpolate value from array at the separation point
 
     Notes:
-    Ignores array values after iSep. See help(march)
+    Ignores array values after iSep. See help(twiates)
 
     Inputs:
     y     -- array of values to be interpolated
@@ -77,10 +86,10 @@ def sep(y,index=False,lam=False):
     ySep  -- interpolated value at the point lambda=-12
 
     Examples:
-    s = np.linspace(0,np.pi,16)        # define distance array
-    u_e = 2*np.sin(s)                     # define external velocity (circle example)
-    delta,lam,iSep = bl.march(s,u_e,nu=1e-5) # march along to the point of separation
-    sSep = bl.sep(s,iSep)                    # find separation distance
+    s = np.linspace(0,np.pi,32)          # distance along BL
+    u_s = 2*np.sin(s)                    # circle external velocity
+    delta2,lam,iSep = bl.thwaites(s,u_s) # BL properties
+    sSep = bl.sep(s,iSep)                # find separation distance
     """
     from math import ceil         # numpy doesn't do ceil correctly
     i = ceil(iSep)                # round up to nearest integer
