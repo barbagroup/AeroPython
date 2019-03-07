@@ -4,10 +4,11 @@ Methods:
     disp_ratio, mom_ratio, df_0
     thwaites, sep
 
-Imports: numpy, cumtrapz from scipy.integrate, ceil from math
+Imports: numpy, math
 """
 
 import numpy as np
+import math
 from scipy.integrate import cumtrapz
 
 # displacement thickness ratios
@@ -22,6 +23,20 @@ def df_0(lam): return 2+lam/6.
 # look-up table for lambda = f(lambda_2)
 _lam_range = np.linspace(-17.5,12)
 _lam2_range = _lam_range*mom_ratio(_lam_range)**2
+
+def cumpower(y,x,p):
+    """
+    Numerical cumulative integral of array y(x) raised to an integer power p
+        result = \int(y^p(x'),x'=0..x)
+    """
+    r = np.zeros_like(x)
+    for i in range(1,len(x)):
+        a,b,dx = y[i-1],y[i],x[i]-x[i-1]
+        if math.isclose(a,b):
+            r[i] = a**p*dx
+        else:
+            r[i]=(a**(p+1)-b**(p+1))/((p+1)*(a-b))*dx
+    return np.cumsum(r)
 
 def thwaites(s,u_s):
     """ Integrate Thwaites over the boundary layer and find shape factor
@@ -44,10 +59,9 @@ def thwaites(s,u_s):
     delta2,lam,iSep = bl.thwaites(s,u_s) # BL properties
     """
     # Thwaites approximation for delta_2^2
-    delta22 = 0.45*cumtrapz(u_s**5,s,initial=0)
+    delta22 = 0.45*cumpower(u_s,s,5)
     delta22[u_s>0] /= u_s[u_s>0]**6
     
-
     # adjust for (Blasius) flat plate IC
     du_s = np.gradient(u_s)/np.gradient(s)
     if du_s[0]==0: delta22 += 0.441/u_s[0]*s[0]
@@ -92,7 +106,6 @@ def sep(y,iSep):
     delta2,lam,iSep = bl.thwaites(s,u_s) # BL properties
     sSep = bl.sep(s,iSep)                # find separation distance
     """
-    from math import ceil         # numpy doesn't do ceil correctly
-    i = ceil(iSep)                # round up to nearest integer
+    i = math.ceil(iSep)           # round up to nearest integer
     di = i-iSep                   # interpolation `distance`
     return y[i-1]*di+y[i]*(1-di)  # linearly interpolate
