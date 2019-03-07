@@ -55,16 +55,17 @@ def thwaites(s,u_s):
     # adjust for stagnation IC
     elif u_s[0]==0: delta22[0] = 0.075/du_s[0]
         
-    # get shape factor lambda
-    lam = np.interp(delta22*du_s,_lam2_range,_lam_range)
-
-    # find separation point
-    i = np.count_nonzero(lam>-12)
+    # find lambda2 and separation point
+    lam2,lam2_lim = delta22*du_s, -12*mom_ratio(-12)**2
+    i = np.count_nonzero(lam2>lam2_lim)
     if(i==len(s)):
         iSep = i
     else:
-        iSep = np.interp(12,-lam[i-1:i+1],[i-1,i])
+        iSep = np.interp(-lam2_lim,-lam2[i-1:i+1],[i-1,i])
    
+    # get shape factor lambda
+    lam = np.interp(lam2,_lam2_range,_lam_range)
+
     # Clean up results after separation
     delta22[range(i+1,len(s))]=0 
     lam[range(i+1,len(s))]=-12 
