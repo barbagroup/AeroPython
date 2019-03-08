@@ -32,7 +32,7 @@ def cumpower(y,x,p):
     r = np.zeros_like(x)
     for i in range(1,len(x)):
         a,b,dx = y[i-1],y[i],x[i]-x[i-1]
-        if math.isclose(a,b):
+        if np.isclose(a,b):
             r[i] = a**p*dx
         else:
             r[i]=(a**(p+1)-b**(p+1))/((p+1)*(a-b))*dx
