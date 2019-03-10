@@ -67,8 +67,8 @@ def thwaites(s,u_s):
     if du_s[0]==0: delta22 += 0.441/u_s[0]*s[0]
 
     # adjust for stagnation IC
-    elif u_s[0]==0: delta22[0] = 0.075/du_s[0]
-        
+    else: delta22[0] = 0.075/du_s[0]
+
     # find lambda2 and separation point
     lam2,lam2_lim = delta22*du_s, -12*mom_ratio(-12)**2
     i = np.count_nonzero(lam2>lam2_lim)
@@ -80,10 +80,6 @@ def thwaites(s,u_s):
     # get shape factor lambda
     lam = np.interp(lam2,_lam2_range,_lam_range)
 
-    # Clean up results after separation
-    delta22[range(i+1,len(s))]=0 
-    lam[range(i+1,len(s))]=-12 
-        
     # Return delta_2 and lambda and iSep
     return np.sqrt(delta22),lam,iSep
 
@@ -91,7 +87,7 @@ def sep(y,iSep):
     """ Interpolate value from array at the separation point
 
     Notes:
-    Ignores array values after iSep. See help(twiates)
+    Ignores array values after iSep. See help(thwiates)
 
     Inputs:
     y     -- array of values to be interpolated
