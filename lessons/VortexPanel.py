@@ -478,13 +478,13 @@ def make_jfoil(N, xcen=-0.1, ycen=0):
     r2 = x**2+y**2
     return panelize(x*(1+1/r2)/2,y*(1-1/r2))
 
-def spline(N,x,y):
+def _spline(N,x,y,per=True):
     from scipy import interpolate
-    tck, u = interpolate.splprep([x, y], s=0, per=True)
+    tck, u = interpolate.splprep([x, y], s=0, per=per)
     unew = np.linspace(0, 1, N)
     return interpolate.splev(unew, tck)
 
-def make_spline(N,x,y):
+def make_spline(N,x,y,sharp=False):
     """Make PanelArray using splines
 
     Note:
@@ -493,8 +493,9 @@ def make_spline(N,x,y):
     so the output needs to be checked carefully.
 
     Inputs:
-    N   -- number of panels to use
-    x,y -- body coordinate lists
+    N     -- number of panels to use
+    x,y   -- body coordinate lists
+    sharp -- sharp corner between panel 0 and N-1?
 
     Outputs:
     A PanelArray object; see help(PanelArray)
@@ -506,7 +507,7 @@ def make_spline(N,x,y):
     geom = vp.make_spline(20,x,y)   # fit 20 panels
     geom.plot('-o')                 # plot panels
     """
-    xi,yi = spline(N+1,x,y)
+    xi,yi = _spline(N+1,x,y,per=not sharp)
     return panelize(xi,yi)
 
 
