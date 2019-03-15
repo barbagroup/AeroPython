@@ -215,7 +215,7 @@ class PanelArray(object):
         A = np.empty((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels): # loop over panels
             fx,fy = p_j.constant(xc,yc)           # f_j at all panel centers
-            A[:,j] = fx*sx+fy*sy                   # tangential component
+            A[:,j] = fx*sx+fy*sy                  # tangential component
         np.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
         # construct the RHS
@@ -231,9 +231,9 @@ class PanelArray(object):
         # construct the matrix
         A = np.zeros((len(xc), len(xc)))         # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
-            u0,v0,u1,v1 = p_j.linear(xc,yc)        # f_j at all panel centers
-            A[:,self.left[j]] += -u0*sy+v0*sx       # -S end influence
-            A[:,j] += -u1*sy+v1*sx                  # +S end influence
+            fx0,fy0,fx1,fy1 = p_j.linear(xc,yc)     # f_j at all panel ends
+            A[:,self.left[j]] += -fx0*sy+fy0*sx     # -S end influence
+            A[:,j] += -fx1*sy+fy1*sx                # +S end influence
 
         # construct the RHS
         b = np.cos(self.alpha)*sy-np.sin(self.alpha)*sx
