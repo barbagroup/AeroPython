@@ -338,8 +338,8 @@ class PanelArray(object):
         s[0] = S[0], s[1] = 2*S[0]+S[1], s[2] = 2*S[0]+2*S[1]+S[2], ...
 
         Example:
-        foil = vp.make_jfoil(N=64)       # define the geometry
-        s = foil.distance()                 # get the panel path distance
+        foil = vp.make_jfoil(N=64)   # define the geometry
+        s = foil.distance()          # get the panel path distance
         """
         S = self.get_array('S')
         return np.cumsum(2*S)-S
@@ -355,8 +355,8 @@ class PanelArray(object):
 
         Example:
         foil = vp.make_jfoil(N=64)        #1. Define the geometry
-        foil.solve_gamma_kutta(alpha=0.1)    #2. Solve for the potential flow
-        foil_top,foil_bot = foil.split()     #3. Split the boundary layers
+        foil.solve_gamma_kutta(alpha=0.1) #2. Solve for the potential flow
+        foil_top,foil_bot = foil.split()  #3. Split the boundary layers
         """
         # split based on flow direction
         top = [p for p in self.panels if p.gamma<=0]
