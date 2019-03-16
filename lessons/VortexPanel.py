@@ -215,7 +215,7 @@ class PanelArray(object):
         A = np.empty((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels): # loop over panels
             fx,fy = p_j.constant(xc,yc)           # f_j at all panel centers
-            A[:,j] = fx*sx+fy*sy                   # tangential component
+            A[:,j] = fx*sx+fy*sy                  # tangential component
         np.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
         # construct the RHS
@@ -231,9 +231,9 @@ class PanelArray(object):
         # construct the matrix
         A = np.zeros((len(xc), len(xc)))         # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
-            u0,v0,u1,v1 = p_j.linear(xc,yc)        # f_j at all panel centers
-            A[:,self.left[j]] += -u0*sy+v0*sx       # -S end influence
-            A[:,j] += -u1*sy+v1*sx                  # +S end influence
+            fx0,fy0,fx1,fy1 = p_j.linear(xc,yc)     # f_j at all panel ends
+            A[:,self.left[j]] += -fx0*sy+fy0*sx     # -S end influence
+            A[:,j] += -fx1*sy+fy1*sx                # +S end influence
 
         # construct the RHS
         b = np.cos(self.alpha)*sy-np.sin(self.alpha)*sx
@@ -478,13 +478,13 @@ def make_jfoil(N, xcen=-0.1, ycen=0):
     r2 = x**2+y**2
     return panelize(x*(1+1/r2)/2,y*(1-1/r2))
 
-def spline(N,x,y):
+def _spline(N,x,y,per=True):
     from scipy import interpolate
-    tck, u = interpolate.splprep([x, y], s=0, per=True)
+    tck, u = interpolate.splprep([x, y], s=0, per=per)
     unew = np.linspace(0, 1, N)
     return interpolate.splev(unew, tck)
 
-def make_spline(N,x,y):
+def make_spline(N,x,y,sharp=False):
     """Make PanelArray using splines
 
     Note:
@@ -493,8 +493,9 @@ def make_spline(N,x,y):
     so the output needs to be checked carefully.
 
     Inputs:
-    N   -- number of panels to use
-    x,y -- body coordinate lists
+    N     -- number of panels to use
+    x,y   -- body coordinate lists
+    sharp -- sharp corner between panel 0 and N-1?
 
     Outputs:
     A PanelArray object; see help(PanelArray)
@@ -506,7 +507,7 @@ def make_spline(N,x,y):
     geom = vp.make_spline(20,x,y)   # fit 20 panels
     geom.plot('-o')                 # plot panels
     """
-    xi,yi = spline(N+1,x,y)
+    xi,yi = _spline(N+1,x,y,per=not sharp)
     return panelize(xi,yi)
 
 
