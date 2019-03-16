@@ -39,12 +39,10 @@
         margin-top: 0.5em;
         display: block;
     }
-    .text_cell_render h5 {
+    .text_cell_render h4 {
         font-weight: 300;
-        font-size: 16pt;
         color: #CD2305;
-        font-style: italic;
-        margin-bottom: .5em;
+        margin-bottom: 0.5em;
         margin-top: 0.5em;
         display: block;
     }
