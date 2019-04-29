@@ -126,7 +126,7 @@ class PanelArray(object):
     alpha  -- the flow angle of attack
     """
 
-    def __init__(self, panels):
+    def __init__(self, panels, closed=True):
         """Initialize a PanelArray
 
         Inputs:
@@ -141,12 +141,13 @@ class PanelArray(object):
         self.bodies = [(0,n)]        # range for a body
         self.left = [n-1]+list(range(n-1)) # index to the left
 
-        # compute area
-        yc, S, sx = self.get_array('yc','S','sx')
-        self.area = sum(sx*yc*2.*S)
-        if self.area<1e-5: # check body area
-            raise ValueError("PanelArray must have positive area.\n"+
-                             "Check that your panels wrap clockwise.")
+        # compute area for closed PanelArrays
+        if closed:
+            yc, S, sx = self.get_array('yc','S','sx')
+            self.area = sum(sx*yc*2.*S)
+            if self.area<1e-5: # check body area
+                raise ValueError("A closed PanelArray must have positive area.\n"+
+                                 "Check that your panels wrap clockwise.")
 
     ### Flow solver
 
@@ -361,7 +362,8 @@ class PanelArray(object):
         # split based on flow direction
         top = [p for p in self.panels if p.gamma<=0]
         bot = [p for p in self.panels if p.gamma>=0]
-        return PanelArray(top),PanelArray(bot[::-1])
+        closed = False # split arrays don't make closed loops
+        return PanelArray(top,closed),PanelArray(bot[::-1],closed)
 
     def thwaites(self):
         """ Wrapper for BoundaryLayer.thwaites
