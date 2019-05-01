@@ -118,3 +118,7 @@ You can also open an issue if you find a bug, or have a suggestion.
 (c) 2017 Lorena A. Barba, Olivier Mesnard. All content is under Creative Commons Attribution [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.txt), and all [code is under BSD-3 clause](https://github.com/barbagroup/AeroPython/blob/master/LICENSE) (previously under MIT, and changed on November 12, 2018).
 
 We are happy if you re-use the content in any way!
+
+## Note
+
+Another Python course exists under the [AeroPython](https://github.com/AeroPython/Curso_AeroPython/) title with different content, and in the Spanish language. (See [tweet](https://twitter.com/LorenaABarba/status/464041427169583104) from 2014.)
