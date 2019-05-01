@@ -26,6 +26,11 @@ The **AeroPython** learning module presents a computational approach to an engin
 The audience of such a course would be advanced undergraduate students in mechanical or aerospace engineering (or master's students), with a fluid mechanics pre-requisite. 
 Classical aerodynamics is a broad theoretical subject—this learning module focuses on one topic: the use of potential flow for aerodynamic analysis, via the panel method.
 
+The series of lessons is the core of a university course (Aerodynamics-Hydrodynamics, MAE-6226) by Prof. Lorena A. Barba at the George Washington University.
+The first version ran in Spring 2014 and these Jupyter Notebooks were prepared for that class, with Olivier Mesnard.
+In Spring 2015, we revised and extended the collection, adding student assignments to strengthen the learning experience.
+With added discussions of theoretical topics, assigned readings, and assignments, the modules can span a full-semester course.
+
 **AeroPython** is a collection of Jupyter notebooks: one "lesson zero" introduction to Python and NumPy arrays; 11 lessons in potential flow using Python; three student assignments involving a coding mini-project; and one extra notebook with an exercise deriving the panel-method equations.
 
 The list of lessons is:
