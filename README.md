@@ -50,6 +50,12 @@ DOI: [10.6084/m9.figshare.1004727.v3](https://doi.org/10.6084/m9.figshare.100472
 2. [Exercise: Derivation of the vortex-source panel method](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Exercise.ipynb)
 3. [Assignment: 2D multi-component airfoil](http://nbviewer.ipython.org/github/barbagroup/AeroPython/blob/master/lessons/11_Lesson11_Assignment.ipynb)
 
+## Statement of need
+
+Classical aerodynamics based on potential theory can be an arid subject when presented in the traditional "pen-and-paper" approach. It is a fact that the mathematical framework of potential flow was the only tractable way to apply theoretical calculations in aeronautics through all the early years of aviation, including the development of commercial aircraft into the 1980s and later. Yet, the only way to exercise the power of potential-flow aerodynamics is through numerical computation. Without computing, the student can explore only the simplest fundamental solutions of the potential equation: point sinks and sources, point vortex, doublet, uniform flow.
+
+The essential tool for applying this theoretical framework to aerodynamics is the panel method, which obtains the strength of a distribution of singularities on a body that makes the body a closed streamline. The addition of vortex singularities to satisfy a Kutta condition allows treating lifting bodies (like airfoils). The AeroPython series begins with simple point-singularity solutions of the potential equation, and applies the principle of superposition to show how to obtain streamline patterns corresponding to flow around objects. Around the half-way point, the module presents the learner with the fundamental relationship between circulation (via a point vortex) and the production of a lift force. Using a distribution of many point singularities on an airfoil, finally, the module shows how we can obtain pressure distributions, and the lift around an airfoil. With this foundation, the student is ready to apply the panel method in authentic engineering situations.
+
 ## Dependencies
 
 To use these lessons, you need Python 3, and the standard stack of scientific Python: NumPy, Matplotlib, SciPy.
