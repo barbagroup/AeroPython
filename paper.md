@@ -50,7 +50,7 @@ The list of lessons is:
 * _Source panel method_: solves for the source-sheet strengths to get flow around a NACA0012 airfoil.
 * _Vortex-source panel method_: start with the source panel method of the previous lesson, and add circulation to get a lift force. Introduces the idea of the Kutta condition.
 * _Exercise: Derivation of the vortex-source panel method_.
-* _Assignment: 2D multi-component airfoil_.
+* _Assignment 3: 2D multi-component airfoil_.
 
 The design of the lessons follows the pattern of the **CFD Python** collection [@BarbaForsyth2018], with step-by-step, incrementally worked-out examples, leading to a more complex computational solution. In this case, the final product is a panel-method solution of potential flow around a lifting airfoil.
 
