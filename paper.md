@@ -22,7 +22,7 @@ bibliography: paper.bib
 
 # Summary
 
-The **AeroPython** learning module presents a computational approach to an engineering course in classical aerodynamics. 
+The **AeroPython** set of lessons present a computational approach to an engineering course in classical aerodynamics. 
 The audience of such a course would be advanced undergraduate students in mechanical or aerospace engineering (or master's students), with a fluid mechanics pre-requisite. 
 Classical aerodynamics is a broad theoretical subject—this learning module focuses on one topic: the use of potential flow for aerodynamic analysis, via the panel method.
 
