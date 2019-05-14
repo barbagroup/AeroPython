@@ -69,7 +69,7 @@ At the end of the course, the student is ready to use panel methods for aerodyna
 
 **AeroPython** adopts the instructional design patterns used in the **CFD Python** learning module [@BarbaForsyth2018]. 
 It breaks down a rather complex numerical problem—in this case, the panel method for lifting bodies—into small steps, it chunks these steps together logically, and adds narrative and context. 
-The pedagogical strategy relies on the worked-example effect [@sweller2006worked, @chen2015worked] and sub-goals [@catrambone1998, @margulieuxETal2016]. 
+The pedagogical strategy relies on the worked-example effect [@sweller2006worked; @chen2015worked] and sub-goals [@catrambone1998; @margulieuxETal2016]. 
 In the classroom, students are guided to re-write the worked examples in their own Jupyter notebooks, and annotate with their own reflections during class discussions. 
 These discussions may take the form of short introductions to a new section of the course, or a debrief after completing a sub-goal. 
 Classroom activity may also be peppered with "pair-share" exercises, and individual inspection of student work by the instructor. 
