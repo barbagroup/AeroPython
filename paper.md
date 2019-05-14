@@ -2,7 +2,7 @@
 title: 'Aero Python: classical aerodynamics of potential flow using Python'
 tags:
 - Python
-- Aerodynamics
+- aerodynamics
 - differential equations
 - numerical methods
 - finite differences
@@ -14,7 +14,7 @@ authors:
   orcid: 0000-0001-5335-7853
   affiliation: "1"
 affiliations:
-- name: The George Washington University
+- name: The George Washington University (Washington DC, USA)
   index: 1
 date: 11 November 2018
 bibliography: paper.bib
