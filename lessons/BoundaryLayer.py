@@ -9,7 +9,6 @@ Imports: numpy, math
 
 import numpy as np
 import math
-from scipy.integrate import cumtrapz
 
 # displacement thickness ratios
 def disp_ratio(lam): return 3./10.-lam/120.
