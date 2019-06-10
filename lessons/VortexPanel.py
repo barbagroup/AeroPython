@@ -359,9 +359,13 @@ class PanelArray(object):
         foil.solve_gamma_kutta(alpha=0.1) #2. Solve for the potential flow
         foil_top,foil_bot = foil.split()  #3. Split the boundary layers
         """
+        # roll the panel index to a stagnation point
+        gamma = self.get_array('gamma')
+        i = max(np.argmax(gamma<0),np.argmax(gamma>0))
+        rolled = np.roll(self.panels,-i)
         # split based on flow direction
-        top = [p for p in self.panels if p.gamma<=0]
-        bot = [p for p in self.panels if p.gamma>=0]
+        top = [p for p in rolled if p.gamma<=0]
+        bot = [p for p in rolled if p.gamma>=0]
         closed = False # split arrays don't make closed loops
         return PanelArray(top,closed),PanelArray(bot[::-1],closed)
 
