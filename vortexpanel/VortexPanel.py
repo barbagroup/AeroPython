@@ -14,10 +14,15 @@ Methods:
 Imports:
     numpy, pyplot from matplotlib, march & sep from BoundaryLayer
 """
+import os
+import sys
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
 import numpy as np
 from matplotlib import pyplot as plt
-import BoundaryLayer as bl
+from vortexpanel import BoundaryLayer as bl
 
 ### Fundamentals
 
