@@ -17,13 +17,13 @@ Teaching numerical hydrodynamics with [Jupyter notebooks](http://jupyter.org/) w
 ### Static notebook list:
 
 #### Introduction
-* [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/0_0_QuickPythonIntro.ipynb)
+* [Quick Python Intro](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/notebooks/0_0_QuickPythonIntro.ipynb)
 
 #### Numerical methods
-1. [Vortex panel solution method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_1_SolutionMethod.ipynb)
-1. [Lifting bodies and linear panels](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_2_LiftingBodies.ipynb)
-1. [Boundary layers and separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_3_SeparationPrediction.ipynb)
-1. [Pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/lessons/3_4_PressureDrag.ipynb)
+1. [Vortex panel solution method](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/notebooks/3_1_SolutionMethod.ipynb)
+1. [Lifting bodies and linear panels](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/notebooks/3_2_LiftingBodies.ipynb)
+1. [Boundary layers and separation prediction](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/notebooks/3_3_SeparationPrediction.ipynb)
+1. [Pressure Drag](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/notebooks/3_4_PressureDrag.ipynb)
 
 #### Assignment
 * [Overview](http://nbviewer.ipython.org/urls/github.com/weymouth/MarineHydro/blob/master/coursework3/Assignment.ipynb)
