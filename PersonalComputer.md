@@ -12,10 +12,10 @@ The Marine Hydro notebooks can be opened and used directly from your browser (ju
 	
 2.  Copy the MarineHydro notebooks to your computer
 
-	_Option A_: [download the zipfile](archive/master.zip), and then unzip
-  
-	_Option B_: [use `git` to `fork` the repository](https://help.github.com/articles/fork-a-repo/)
+	_Option A_: [use `git` to `fork` the repository](https://help.github.com/articles/fork-a-repo/)
 
+	_Option B_: [download the zipfile](archive/master.zip), and then unzip
+  
 	If you are interested in coding, or need to code for your IP/MSc project, you should be using `git`. [Github has a nice set of introduction/help documents.](https://help.github.com/)
 
 3.  [Run the notebooks with jupyter](http://jupyter.readthedocs.io/en/latest/running.html#running)
