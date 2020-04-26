@@ -76,11 +76,11 @@ class Panel(object):
         u,v = p_2.velocity(-1,0)          # get induced velocity on x-axis
         """
         if self._gamma[1]-self._gamma[0]: # non-constant gamma
-            u0,v0,u1,v1 = self.linear(x,y)
+            u0,v0,u1,v1 = self._linear(x,y)
             return (self._gamma[0]*u0+self._gamma[1]*u1,
                     self._gamma[0]*v0+self._gamma[1]*v1)
         else:
-            u,v = self.constant(x,y)     # constant gamma
+            u,v = self._constant(x,y)     # constant gamma
             return self.gamma*u,self.gamma*v
 
     def plot(self, style='k'):
@@ -95,12 +95,12 @@ class Panel(object):
         """
         return plt.plot(self.x, self.y, style, lw=2)
 
-    def constant(self, x, y):
+    def _constant(self, x, y):
         "Constant panel induced velocity"
         lr, dt, _, _ = self._transform_xy(x, y)
         return self._rotate_uv(-dt*0.5/np.pi, -lr*0.5/np.pi)
 
-    def linear(self, x, y):
+    def _linear(self, x, y):
         "Linear panel induced velocity"
         lr, dt, xp, yp = self._transform_xy(x, y)
         g, h, c = (yp*lr+xp*dt)/self.S, (xp*lr-yp*dt)/self.S+2, 0.25/np.pi
@@ -220,7 +220,7 @@ class PanelArray(object):
         # construct the matrix
         A = np.empty((len(xc), len(xc)))      # empty matrix
         for j, p_j in enumerate(self.panels): # loop over panels
-            fx,fy = p_j.constant(xc,yc)           # f_j at all panel centers
+            fx,fy = p_j._constant(xc,yc)           # f_j at all panel centers
             A[:,j] = fx*sx+fy*sy                  # tangential component
         np.fill_diagonal(A,0.5)               # fill diagonal with 1/2
 
@@ -237,7 +237,7 @@ class PanelArray(object):
         # construct the matrix
         A = np.zeros((len(xc), len(xc)))         # empty matrix
         for j, p_j in enumerate(self.panels):    # loop over panels
-            fx0,fy0,fx1,fy1 = p_j.linear(xc,yc)     # f_j at all panel ends
+            fx0,fy0,fx1,fy1 = p_j._linear(xc,yc)     # f_j at all panel ends
             A[:,self.left[j]] += -fx0*sy+fy0*sx     # -S end influence
             A[:,j] += -fx1*sy+fy1*sx                # +S end influence
 
@@ -290,17 +290,22 @@ class PanelArray(object):
         # plot panels
         self.plot();
 
-    def plot(self, style='k'):
+    def plot(self, style='k', nlabel=0):
         """Plot the PanelArray panels
 
         Inputs:
         style -- a string defining the matplotlib style
+        nlabel -- add every 'nlabel' panel index labels
 
         Example:
         circle = vp.make_circle(N=32) # make a circle PanelArray
         circle.plot(style='o-')       # plot the geometry
         """
-        for p in self.panels: p.plot(style)
+        for i,p_i in enumerate(self.panels):
+            p_i.plot(style)
+            if nlabel>0 and i%nlabel == 0:
+                x,y = p_i.xc-0.1*p_i.sy,p_i.yc+0.1*p_i.sx
+                plt.text(x,y,i,fontsize=12,horizontalalignment='center',verticalalignment='center')
 
     def velocity(self,x,y):
         "Velocity at (x,y) induced by the free stream and PanelArray"
