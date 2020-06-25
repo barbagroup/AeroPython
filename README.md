@@ -1,6 +1,6 @@
 # Classical Aerodynamics with Python
 
-> _Cite as: Barba, Lorena A., and Mesnard, Olivier (2019). Aero Python: classical aerodynamics of potential flow using Python. Journal of Open Source Education, 2(15), 45, https://doi.org/10.21105/jose.00045
+> _Cite as_: Barba, Lorena A., and Mesnard, Olivier (2019). Aero Python: classical aerodynamics of potential flow using Python. Journal of Open Source Education, 2(15), 45, https://doi.org/10.21105/jose.00045
 
 [![Version](https://img.shields.io/badge/version-1.0-blue.svg)](None)
 [![License](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/barbagroup/AeroPython/raw/master/LICENSE)
